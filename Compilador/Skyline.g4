@@ -4,15 +4,32 @@ grammar Skyline;
 // Definim la Gramatica, (REGLES)
 
 // Per quan haguem de processar el final del fitxer
-root : expr EOF ;
+root : consulta EOF
+    | assignacio EOF
+    | expr EOF;
+
+
+// Definim la semantica que tindra una consulta
+consulta : WORD;
+
+
+// Definim la semantica que tindra una assignacio
+assignacio : WORD ASSIGN expr;
 
 // Definim les expresions de suma, resta ... de nombres naturals
+
 expr : expr MES expr
     | expr MENYS expr
     | expr MULT expr
     | expr DIV expr
     | <assoc=right> expr POT expr // La potencia te associativitat per la dreta (cal especificar-ho)
+    | consulta
     | NUM;
+
+
+
+
+
 
 
 // Definim Gramàtica
@@ -23,4 +40,5 @@ MULT : '*';
 DIV : '/';
 POT : '^';
 WS : [ \n]+ -> skip ; // indica a l'escàner que el token WS no ha d'arribar al parser.
-WORD : ['a'-'z'];
+WORD : ('a'..'z' | 'A'..'Z')+;
+ASSIGN : ':=';

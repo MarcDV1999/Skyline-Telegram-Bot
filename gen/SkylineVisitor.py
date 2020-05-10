@@ -14,6 +14,16 @@ class SkylineVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by SkylineParser#consulta.
+    def visitConsulta(self, ctx:SkylineParser.ConsultaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by SkylineParser#assignacio.
+    def visitAssignacio(self, ctx:SkylineParser.AssignacioContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by SkylineParser#expr.
     def visitExpr(self, ctx:SkylineParser.ExprContext):
         return self.visitChildren(ctx)
