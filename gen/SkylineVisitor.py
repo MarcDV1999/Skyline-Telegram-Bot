@@ -1,4 +1,4 @@
-# Generated from /Users/marcdomenech/Desktop/UPC/Computacio/LP/Practica Pyhton i Compiladors/Compilador/Skyline.g4 by ANTLR 4.8
+# Generated from /Users/marcdomenech/Desktop/UPC/Computacio/LP/Skyline Telegram Bot/Compilador/Skyline.g4 by ANTLR 4.8
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .SkylineParser import SkylineParser
@@ -21,6 +21,21 @@ class SkylineVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by SkylineParser#assignacio.
     def visitAssignacio(self, ctx:SkylineParser.AssignacioContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by SkylineParser#edifici.
+    def visitEdifici(self, ctx:SkylineParser.EdificiContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by SkylineParser#edificis.
+    def visitEdificis(self, ctx:SkylineParser.EdificisContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by SkylineParser#edificiAleatori.
+    def visitEdificiAleatori(self, ctx:SkylineParser.EdificiAleatoriContext):
         return self.visitChildren(ctx)
 
 
