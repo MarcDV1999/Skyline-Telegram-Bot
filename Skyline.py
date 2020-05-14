@@ -19,12 +19,17 @@ class Skyline():
 
         # Llista on anirem guardant tots els passos que anem fent per a generar el Skyline
         self.llistaAccions = []
+        self.llistaParts = []
 
 
     # Configura la grafica com nosaltres volguem
     def configureAxis(self):
         self.ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
+
+    def actualitzarParts(self,edifici):
+
+        pass
 
     # Afegeix un nou edifici al SKyline
     def afegir(self, xmin, altura, xmax):
@@ -51,6 +56,9 @@ class Skyline():
         # Afegim al llistat d'accions el que acabem de fer
         self.llistaAccions.append((xmin, altura, xmax))
 
+        self.actualitzarParts((xmin,altura,xmax))
+
+
         #Retornem l'altura i area toral del Skyline
         return self.alturaTotal, self.areaTotal
 
@@ -64,6 +72,9 @@ class Skyline():
         # Borrem la fiura actual per a poder repintar la nova
         plt.cla()
         self.configureAxis()
+
+        # Reiniciem la llista de parts
+        self.llistaParts = []
 
         # Anem re-calculan el Xmin, Altura i Xmax sumantt el offset, i anem dibuixant pas a pas.
         for accio in ultimesAccions:
@@ -86,6 +97,9 @@ class Skyline():
         # Borrem la fiura actual per a poder repintar la nova
         plt.cla()
         self.configureAxis()
+
+        # Reiniciem la llista de parts
+        self.llistaParts = []
 
         # Comprovem que no ens passem al desplaçar a l'esquerra
         if (self.xminTotal - n < 0):
@@ -111,7 +125,7 @@ class Skyline():
         ultimesAccions = self.llistaAccions.copy()
         for _ in range (1,n):
             for accio in ultimesAccions:
-                print(accio)
+                #print(accio)
                 # Anem calculan el Xmin, ALtura i Xmax, i anem dibuixant pas a pas.
                 base = accio[2] - accio[0]
                 altura = accio[1]
@@ -123,20 +137,145 @@ class Skyline():
         # Retornem l'altura i area toral del Skyline
         return self.alturaTotal, self.areaTotal
 
+    #Donades unes accions, ens retorna una llista amb el Skyline dividid per parts
+    def trobarParts(self,accions):
+        alturaT = -1
+        xmaxT = -1
+        xminT = -1
+        xminAnterior = -1
+        xmaxAnterior = -1
+        alturaAnterior = -1
+        l = []
+        llista = []
+
+        primer = True
+        ultim = False
+        for elem in accions:
+            if (primer):
+                xminT = elem[0]
+                xmaxT = elem[2]
+                alturaT = elem[1]
+                primer = False
+
+            elif(elem[0] == xmaxT and elem[1] == alturaT):
+                llista = [xminT,alturaT,elem[2]]
+                xmaxT = elem[2]
+                ultim = True
+
+            elif(elem[0] == xminAnterior and elem[2] == xmaxAnterior and alturaAnterior != elem[1]):
+                llista = [xminAnterior,max(alturaAnterior,elem[1]),xmaxAnterior]
+                alturaT = max(alturaAnterior,elem[1])
+                ultim = True
+
+            elif (elem[1] != alturaT):
+                if (len(llista) > 0):
+                    l.append(llista)
+                else:
+                    l.append([xminAnterior,alturaAnterior,xmaxAnterior])
+                alturaT = elem[1]
+                llista = []
+
+            else:
+                xminT = elem[0]
+                xmaxT = elem[2]
+                alturaT = elem[1]
+
+            xminAnterior = elem[0]
+            xmaxAnterior = elem[2]
+            alturaAnterior = elem[1]
+
+        if ultim:
+            if (len(llista) > 0):
+                l.append(llista)
+            else:
+                l.append([xminAnterior, alturaAnterior, xmaxAnterior])
+        return l
+
+    # Donada una accio i una part d'un Skyline, ens retorna l'edifici que cap en el esai que delimita la part
+    def capDins(self,accio,part):
+        #Per cabre, cal que l'edifici estigui abans del xmax de la part i que el xmin
+        if (part[2] >= accio[0] and part[0] <= accio[2]):
+            # Si l'accio es més petita que la part, podem pintar l'edifici sencer
+            if(part[2] >= accio[2]):
+                print (accio,part,accio[0], min(part[1],accio[1]), accio[2])
+                return (accio[0],min(part[1],accio[1]),accio[2])
+            # Si l'accio es més gran que la part, hem de pintar un tros del edifici
+            else:
+                print (accio,part,accio[0], min(part[1],accio[1]), part[2])
+                return (accio[0], min(part[1],accio[1]), part[2])
+        # Sino, no cap el edifici
+        else:
+            return ()
+
 
     # Donat un Skyline, calcula l'intersecció entre el parametre implicit i b
-    def interseccio(self, b):
-        return False
+    def interseccio(self, sk):
+
+        # Ordenem les accions dels dos skylines
+        llistaAccionsNoves = sk.getLlistaAccions()
+        llistaAccionsNoves.sort(key=lambda x: x[0])
+        self.llistaAccions.sort(key=lambda x: x[0])
+
+        # Dividim el Skyline principal en parts (per a que sigui mes facil)
+        #print('Accions B', llistaAccionsNoves)
+        parts = self.trobarParts(self.llistaAccions)
+        #print('Parts', parts)
+        # Especifiquem que volem pintar la interseccio de color blau
+        self.color = 'Blue'
+
+        # Per cada nova accio a afegir, mirarem si cap dins de cada part del skyline principal. Si cap,
+        # pintarem l'intersecció
+        for accio in llistaAccionsNoves:
+            for part in parts:
+                edifici = self.capDins(accio,part)
+                if (len(edifici) > 0):
+                    self.afegir(edifici[0], edifici[1], edifici[2])
+
+
 
 
     # Donat un Skyline, calcula l'unió entre el parametre implicit i b
-    def unio(self, b):
-        return False
+    def unio(self, sk):
+        llistaAccionsUnir = sk.getLlistaAccions()
+        print(llistaAccionsUnir)
+
+        # Reiniciem la llista de parts
+        self.llistaParts = []
+
+        for accio in llistaAccionsUnir:
+            # print(accio)
+            # Anem calculan el Xmin, ALtura i Xmax, i anem dibuixant pas a pas.
+            self.afegir(accio[0], accio[1], accio[2])
 
 
     # Calcula l'Skyline reflectit
     def mirall(self):
-        return False
+
+        #Ens quedem amb el inici del Skyline i posem del reves la llista de accions
+        inici = self.llistaAccions[0][0]
+        self.llistaAccions.reverse()
+
+        #Fem una copia per a poder iterar sobre ella, si iteressim sobre l'atribut directament,
+        # entariem en bucle infinit ja que cada cop que dibuixem, afegim una entrada a la llista d'accions
+        ultimesAccions = self.llistaAccions.copy()
+
+        # Borrem la figura actual per a poder repintar la nova
+        plt.cla()
+        self.configureAxis()
+        self.llistaAccions = []
+
+        # Reiniciem la llista de parts
+        self.llistaParts = []
+
+        # Per cada accio (amb la llista girada), anem dibuixant recalculant el inici i el final
+        for accio in ultimesAccions:
+            base = accio[2] - accio[0]
+            altura = accio[1]
+
+            xmin = inici
+            xmax = xmin + base
+            inici = xmax
+            self.afegir(xmin, altura, xmax)
 
 
     # Assigna el paramtere a l'atribut xminTotal
@@ -152,13 +291,35 @@ class Skyline():
         self.llistaAccions = llistaAccions
 
 
+    # Consulta el paramtere a l'atribut llistaAccions
+    def getLlistaAccions(self):
+        return self.llistaAccions
+
+    # Consulta l'atribut llistaParts
+    def getLlistaParts(self):
+        return self.llistaParts
+
+
 a = Skyline()
 a.afegir(1,2,3)
-a.afegir(3,4,6)
-a.replicar(3)
-#a.afegir(16,6,19)
+a.afegir(1,5,3)
+a.afegir(3,2,6)
+
+a.replicar(1)
+a.afegir(16,6,19)
 #a.replicar(3)
 #a.moureDreta(2)
-a.moureEsquerra(2)
+#a.moureEsquerra(2)
+#a.mirall()
+
+b = Skyline()
+b.afegir(1,2,3)
+b.afegir(1,5,3)
+b.afegir(3,2,6)
+b.replicar(1)
+b.mirall()
+
+
+a.interseccio(b)
 
 plt.show()
