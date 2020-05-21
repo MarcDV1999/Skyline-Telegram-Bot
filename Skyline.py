@@ -38,27 +38,29 @@ class Skyline():
 
     # Afegeix un nou edifici al SKyline
     def afegir(self, xmin, altura, xmax):
-        base = xmax - xmin
-        inici = (xmin, 0)
+        inici = min(xmin,xmax)
+        fi = max(xmax,xmin)
+        base = fi-inici
+        ini = (inici, 0)
         #new = Skyline()
         #Dibuixem el nou edifici
         #new.setPatch(inici,base,altura,self.color)
         self.ax.add_patch(
-            patches.Rectangle(inici, base, altura, color=self.color))
+            patches.Rectangle(ini, base, altura, color=self.color))
 
         # Actualitzem Xmax, Altura, Xmin i Area totals del Skyline
         #new.setXmaxTotal(max(self.xmaxTotal,xmax))
         #new.setAlturaTotal(max(self.alturaTotal,altura))
         #new.setAreaTotal(base*altura)
-        self.xmaxTotal = max(self.xmaxTotal,xmax)
+        self.xmaxTotal = max(self.xmaxTotal,fi)
         self.alturaTotal = max(self.alturaTotal,altura)
         self.areaTotal += (base * altura)
         if self.xminTotal != -1:
-            self.xminTotal = min(self.xminTotal, xmin)
+            self.xminTotal = min(self.xminTotal, inici)
             #new.setXminTotal(min(self.xminTotal, xmin))
         else:
             #new.setXminTotal(xmin)
-            self.xminTotal = xmin
+            self.xminTotal = inici
 
         # Especifiquem els limits del eixos
         self.ax.set_ylim(0, self.alturaTotal + 1)
@@ -67,10 +69,10 @@ class Skyline():
         #new.setLimits()
 
         # Afegim al llistat d'accions el que acabem de fer
-        self.llistaAccions.append((xmin, altura, xmax))
+        self.llistaAccions.append((inici, altura, fi))
         #new.setLlistaAccions(self.llistaAccions.append((xmin, altura, xmax)))
 
-        self.actualitzarParts((xmin,altura,xmax))
+        self.actualitzarParts((inici,altura,fi))
         #new.setParts(self.llistaParts)
         #new.actualitzarParts((xmin,altura,xmax))
 
@@ -144,14 +146,14 @@ class Skyline():
     def replicar (self, n):
         # Accedirem a les accions passades per a replicar-les una a una.
         ultimesAccions = self.llistaAccions.copy()
-        for _ in range (1,n):
+        fi = self.xmaxTotal
+        for i in range (1,n):
             for accio in ultimesAccions:
-                #print(accio)
                 # Anem calculan el Xmin, ALtura i Xmax, i anem dibuixant pas a pas.
-                base = accio[2] - accio[0]
                 altura = accio[1]
-                xmin = self.xmaxTotal
-                xmax = self.xmaxTotal + base
+                xmin = (fi * i) + (accio[0])
+                xmax = (fi * i) + (accio[2])
+                #print('Replicar: Accio', accio, xmin, xmax)
                 self.afegir(xmin, altura, xmax)
 
 
@@ -224,8 +226,8 @@ class Skyline():
                 return (accio[0],min(part[1],accio[1]),accio[2])
             # Si l'accio es més gran que la part, hem de pintar un tros del edifici
             else:
-                print ('CapDins tros:',accio,part,accio[0], min(part[1],accio[1]), part[2])
-                return (part[0], min(part[1],accio[1]), part[2])
+                print ('CapDins tros:',accio,part,part[0], min(part[1],accio[1]), part[2])
+                return (max(part[0],accio[0]), min(part[1],accio[1]), part[2])
         # Sino, no cap el edifici
         else:
             return ()
@@ -283,12 +285,12 @@ class Skyline():
         # Ens quedem amb el inici del Skyline i posem del reves la llista de accions
         inici = self.xminTotal
         fi = self.xmaxTotal
-        print('Mirall: accions', self.llistaAccions)
+        #print('Mirall: accions', self.llistaAccions)
 
         # Fem una copia per a poder iterar sobre ella, si iteressim sobre l'atribut directament,
         # entariem en bucle infinit ja que cada cop que dibuixem, afegim una entrada a la llista d'accions
         ultimesAccions = self.llistaAccions.copy()
-
+        ultimesAccions.sort(key=lambda x: x[0], reverse=True)
         print('Mirall: accions', ultimesAccions)
         # Borrem la fiura actual per a poder repintar la nova
         self.figura.clf()
@@ -304,10 +306,12 @@ class Skyline():
             base = accio[2] - accio[0]
             altura = accio[1]
 
-            xmin = fi - accio[0]
+            xmin = inici
             xmax = xmin + base
             print('Mirall: Nou edifici', xmin, altura, xmax)
             self.afegir(xmin, altura, xmax)
+            inici = xmax
+
         return self
 
     # Consulta el paramtere a l'atribut llistaAccions
@@ -365,8 +369,12 @@ class Skyline():
 
 '''
 a = Skyline()
-a.afegir(1,2,4)
-a.afegir(6,5,8)
+#a.afegir(1,2,2)
+#a.afegir(2,4,4)
+#a.afegir(4,2,8)
+a.afegir(1,4,3)
+a.afegir(3,8,5)
+a.afegir(5,4,9)
 a.mirall()
 plt.show()
 '''

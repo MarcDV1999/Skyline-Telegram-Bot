@@ -17,6 +17,8 @@ class SkTreeVisitor(SkylineVisitor):
     b = Skyline()
     a.afegir(1,2,3)
     b.afegir(3,2,10)
+    a.saveSkyline('FIG-{}.obj'.format('a'))
+    b.saveSkyline('FIG-{}.obj'.format('b'))
     taulaSimbols = {'a':a,'b':b}
     file = 'image.png'
 

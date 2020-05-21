@@ -8,8 +8,29 @@ from testCompilador import Interpret
 # Defineix una funció que saluda i que s'executarà quan el bot rebi el missatge /start
 # update i context contenen informació interessant del bot
 def start(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Hola, pequeño Timmy.")
-    context.bot.send_message(chat_id=update.effective_chat.id, text="🎗")
+
+    text = '''
+Hola amic. Sóc en Coby 🤖, un Bot que t\'ajuda a crear Skylines.
+    
+Pots escriure les següents comandes per a obtenir més informació🤙🏻
+
+*/start*: Inicia la conversa amb el Bot.
+
+*/help*: Llista de totes les possibles comandes i una breu documentació sobre el seu propòsit i ús.
+
+*/author*: Autor del projecte
+
+*/lst*: Mostra els identificadors definits i la seva corresponent àrea.
+
+*/clean*: Esborra tots els identificadors definits.
+
+*/save id*: Guarda un skyline definit amb el nom id.sky.
+
+*/load id*: Carrega un skyline de l’arxiu id.sky.
+    '''
+    #context.bot.send_photo(chat_id=update.effective_chat.id, photo=open(file, 'rb'))
+    context.bot.send_message(chat_id=update.effective_chat.id,parse_mode='Markdown',text=text)
+    #context.bot.send_message(chat_id=update.effective_chat.id, text="🎗")
 
 # defineix una funció que saluda i que s'executarà quan el bot rebi el missatge /start
 def info(update, context):
@@ -39,22 +60,39 @@ def compilador(update, context):
                                  text=result)
 
 def help(update,context):
-    text = 'Sóc en Coby, un Bot que t\'ajuda a crear Skylines. Aquestes són totes les coses que puc fer:\n' \
-           'Per a crear un nou edifici cal que l\'especifiquis aixi -> (xmin.altura,xmax) on:\n' \
-           'xmin: Posicio on comença l\'edifici\n' \
-           'altura: L\'altura del edifici\n' \
-           'xmax: Posicio on acaba l\'edifici\n' \
-           'Pots guardar els teus Skylines en variabls, per exemple pots fer:\n' \
-           'a := (1,2,3) per a guardarte un Skyline amb l\'etiqueta \'a\'\n' \
-           'Disposes de les següents operacions per a treballar amb Skylines:\n' \
-           'Unio: Skyline + Skyline ( (1,2,3) + (4,5,6) )\n' \
-           'Intersecció: Skyline * Skyline ( (1,2,3) * (4,5,6) )\n' \
-           'Repetir: Skyline * numero ( (1,2,3) * 4 )\n' \
-           'Desplaçar a la dreta: Skyline + numero ( (1,2,3) + 4) )\n' \
-           'Desplaçar a l\'esquerra: Skyline - numero ( (1,2,3) - 4) )\n' \
-           'Mirall: - Skyline ( -(1,2,3) )\n' \
-           'Assignació: etiqueta := Skyline ( (miEdificio := (6,7,8)) )'
-    context.bot.send_message(chat_id=update.effective_chat.id,
+    text = '''
+Aquestes són totes les coses que puc fer:
+
+Per a crear un nou edifici cal saber:
+
+*Inici:* Posicio on comença l\'edifici
+
+*Altura:* L\'altura del edifici
+
+*Fi:* Posicio on acaba l\'edifici
+
+_Exemple: (1,2,3)_ 
+
+En aquest cas estariem creant un edifici que comença a 1, acaba en 3 i té una altura de 2
+
+
+A més puc operar amb aquests edificis i generar Skylines:
+
+*Unio:* _Exemple: (1,2,3) + (4,5,6)_
+
+*Intersecció:* _Exemple: (1,2,3) * (4,5,6)_
+
+*Repetir:* _Exemple (1,2,3) * 4_
+
+*Desplaçar a la dreta:* _Exemple (1,2,3) + 4)_
+
+*Desplaçar a l\'esquerra:* _Exemple (1,2,3) - 4)_
+
+*Mirall:* _Exemple (1,2,3)_
+
+*Assignació:* _Exemple: miEdificio := (6,7,8)_
+        '''
+    context.bot.send_message(chat_id=update.effective_chat.id,parse_mode='Markdown',
                              text=text)
 
 
