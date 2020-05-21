@@ -1,6 +1,7 @@
 # importa l'API de Telegram
-from telegram.ext import Updater, CommandHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from datetime import datetime
+from testCompilador import Interpret
 
 
 
@@ -21,6 +22,15 @@ def hora(update, context):
     current_time = now.strftime("%H:%M:%S")
     context.bot.send_message(chat_id=update.effective_chat.id, text=str(current_time))
 
+# defineix una que s'executa quan arriba un text sense comanda
+def compilador(update, context):
+    input = update.message.text
+    file = 'image.png'
+    #instruccio =''.join(input)
+    print('Instruccio',input)
+    area,altura = antlr.executarInstruccio(input)
+    context.bot.send_message(chat_id=update.effective_chat.id, text='Area: {}\nAltura: {}'.format(str(area),str(altura)))
+    context.bot.send_photo(chat_id=update.effective_chat.id, photo=open(file, 'rb'))
 
 def suma(update, context):
     try:
@@ -38,6 +48,8 @@ def suma(update, context):
 
 
 
+
+
 # declara una constant amb el access token que llegeix de token.txt
 TOKEN = open('token.txt').read().strip()
 
@@ -50,6 +62,10 @@ dispatcher.add_handler(CommandHandler('start', start))
 dispatcher.add_handler(CommandHandler('info', info))
 dispatcher.add_handler(CommandHandler('hora', hora))
 dispatcher.add_handler(CommandHandler('suma', suma))
+dispatcher.add_handler(CommandHandler('compilador', compilador))
+dispatcher.add_handler(MessageHandler(filters=Filters.text, callback=compilador))
+
+antlr = Interpret()
 
 
 # Engega el bot

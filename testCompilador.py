@@ -7,16 +7,21 @@ from gen import SkylineParser as SkParser
 from gen import SkylineLexer as SkLexer
 from gen import SkTreeVisitor
 
-while True:
-    input_stream = InputStream(input('? '))
-    lexer = SkLexer.SkylineLexer(input_stream)
-    token_stream = CommonTokenStream(lexer)
-    parser = SkParser.SkylineParser(token_stream)
-    tree = parser.root()
+class Interpret():
 
-    # A tree tenim el arbre parsejat
-    # print('Tree',tree.toStringTree(recog=parser))
 
-    # Creem un visitor, per a poder recorrer el arbre generat anteriorment
-    visitor = SkTreeVisitor.SkTreeVisitor()
-    visitor.visit(tree)
+    def executarInstruccio(self,instruccio):
+        input_stream = InputStream(instruccio)
+        lexer = SkLexer.SkylineLexer(input_stream)
+        token_stream = CommonTokenStream(lexer)
+        parser = SkParser.SkylineParser(token_stream)
+        tree = parser.root()
+
+        # A tree tenim el arbre parsejat
+        # print('Tree',tree.toStringTree(recog=parser))
+
+        # Creem un visitor, per a poder recorrer el arbre generat anteriorment
+        visitor = SkTreeVisitor.SkTreeVisitor()
+        result = visitor.visit(tree)
+        #print(result)
+        return result

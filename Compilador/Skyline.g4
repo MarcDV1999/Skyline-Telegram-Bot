@@ -41,7 +41,10 @@ expr :  expr MES expr
     | expr DIV expr
     | <assoc=right> expr POT expr // La potencia te associativitat per la dreta (cal especificar-ho)
     | consulta
+    | MENYS expr
     | edifici
+    | edificis
+    | edificiAleatori
     | NUM;
 
 
