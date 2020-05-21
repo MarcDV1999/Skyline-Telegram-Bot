@@ -68,13 +68,6 @@ class SkTreeVisitor(SkylineVisitor):
                         return f1.unio(f2)
                     if (simbol == ctx.MULT()):
                         return f1.interseccio(f2)
-                elif(type(f2) is tuple):
-                    newSk = Skyline()
-                    newSk.afegir(f2[0],f2[1],f2[2])
-                    if (simbol == ctx.MES()):
-                        return f1.unio(newSk)
-                    if (simbol == ctx.MULT()):
-                        return f1.interseccio(newSk)
                 elif(type(f2) is int):
                     if (simbol == ctx.MULT()):
                         return f1.replicar(f2)
@@ -83,28 +76,6 @@ class SkTreeVisitor(SkylineVisitor):
                     if (simbol == ctx.MENYS()):
                         return f1.moureEsquerra(f2)
 
-            elif(type(f1) is tuple):
-                newSk = Skyline()
-                newSk.afegir(f1[0], f1[1], f1[2])
-                if(type(f2) is Skyline):
-                    if (simbol == ctx.MES()):
-                        return newSk.unio(f2)
-                    if (simbol == ctx.MULT()):
-                        return newSk.interseccio(f2)
-                elif(type(f2) is tuple):
-                    newSk2 = Skyline()
-                    newSk2.afegir(f2[0],f2[1],f2[2])
-                    if (simbol == ctx.MES()):
-                        return newSk.unio(newSk2)
-                    if (simbol == ctx.MULT()):
-                        return newSk.interseccio(newSk2)
-                elif(type(f2) is int):
-                    if (simbol == ctx.MULT()):
-                        return newSk.replicar(f2)
-                    if (simbol == ctx.MES()):
-                        return newSk.moureDreta(f2)
-                    if (simbol == ctx.MENYS()):
-                        return newSk.moureEsquerra(f2)
 
             # Si la expressió és entre Skyline i N
             elif(type(f1) is int):
@@ -115,15 +86,6 @@ class SkTreeVisitor(SkylineVisitor):
                         return f2.moureDreta(int(f1))
                     if (simbol == ctx.MENYS()):
                         return f2.moureEsquerra(int(f1))
-                if (type(f2) is tuple):
-                    newSk2 = Skyline()
-                    newSk2.afegir(f2[0], f2[1], f2[2])
-                    if (simbol == ctx.MULT()):
-                        return newSk2.replicar(int(f1))
-                    if (simbol == ctx.MES()):
-                        return newSk2.moureDreta(int(f1))
-                    if (simbol == ctx.MENYS()):
-                        return newSk2.moureEsquerra(int(f1))
                 if (type(f2) is int):
                     if (simbol == ctx.MES()):
                         return f1 + f2
@@ -145,10 +107,7 @@ class SkTreeVisitor(SkylineVisitor):
             edifici = self.visit(fills[1])
             if(simbol == ctx.MENYS() and type(edifici) is Skyline):
                 return edifici.mirall()
-            elif(simbol == ctx.MENYS() and type(edifici) is tuple):
-                newSk = Skyline()
-                newSk.afegir(edifici[0],edifici[1],edifici[2])
-                return newSk.mirall()
+
 
 
 
@@ -172,14 +131,7 @@ class SkTreeVisitor(SkylineVisitor):
                 self.taulaSimbols[variable].saveSkyline('FIG-{}.obj'.format(variable))
                 self.taulaSimbols[variable] = valor.mostrar(self.file)
                 return valor
-            #Si es una tupla, primer hem de crear el Skyline
-            elif(type(valor) is tuple):
-                newSk = Skyline()
-                newSk.afegir(valor[0],valor[1],valor[2])
-                self.taulaSimbols[variable] = newSk
-                newSk.mostrar('fig-{}.png'.format(variable))
-                newSk.saveSkyline('fig-{}.obj'.format(variable))
-                return newSk
+
             elif (type(valor) is int):
                 self.taulaSimbols[variable] = valor
                 return valor

@@ -363,9 +363,10 @@ class Skyline():
         return self
 
 
-
+'''
 a = Skyline()
 a.afegir(1,2,4)
 a.afegir(6,5,8)
 a.mirall()
 plt.show()
+'''
