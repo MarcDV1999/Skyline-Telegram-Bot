@@ -280,14 +280,16 @@ class Skyline():
     # Calcula l'Skyline reflectit
     def mirall(self):
 
-        #Ens quedem amb el inici del Skyline i posem del reves la llista de accions
-        inici = self.llistaAccions[0][0]
-        self.llistaAccions.reverse()
+        # Ens quedem amb el inici del Skyline i posem del reves la llista de accions
+        inici = self.xminTotal
+        fi = self.xmaxTotal
+        print('Mirall: accions', self.llistaAccions)
 
-        #Fem una copia per a poder iterar sobre ella, si iteressim sobre l'atribut directament,
+        # Fem una copia per a poder iterar sobre ella, si iteressim sobre l'atribut directament,
         # entariem en bucle infinit ja que cada cop que dibuixem, afegim una entrada a la llista d'accions
         ultimesAccions = self.llistaAccions.copy()
 
+        print('Mirall: accions', ultimesAccions)
         # Borrem la fiura actual per a poder repintar la nova
         self.figura.clf()
         self.figura = plt.figure()
@@ -302,18 +304,11 @@ class Skyline():
             base = accio[2] - accio[0]
             altura = accio[1]
 
-            xmin = inici
+            xmin = fi - accio[0]
             xmax = xmin + base
-            inici = xmax
+            print('Mirall: Nou edifici', xmin, altura, xmax)
             self.afegir(xmin, altura, xmax)
         return self
-
-
-
-
-
-
-
 
     # Consulta el paramtere a l'atribut llistaAccions
     def getLlistaAccions(self):
@@ -368,25 +363,9 @@ class Skyline():
         return self
 
 
-'''
+
 a = Skyline()
 a.afegir(1,2,4)
-#b = a.copy()
-
-#a.saveSkyline()
-#a.afegir(4,5,6)
-
-
-#a.mostrar('a.png')
-
-#b.mostrar('b.png')
-
-#simulation of new scope
-#b = a.getSkyline()
-b = Skyline()
-b.afegir(3,2,10)
-
-a.interseccio(b)
-a.mostrar('A.png')
-b.mostrar('B.png')
-'''
+a.afegir(6,5,8)
+a.mirall()
+plt.show()
