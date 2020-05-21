@@ -31,8 +31,6 @@ edificiAleatori :  '{' expr ',' expr ',' expr ',' expr ',' expr '}';
 
 
 
-
-
 // Definim les expresions de suma, resta ... de nombres naturals
 
 expr :  expr MES expr

@@ -27,12 +27,13 @@ class SkTreeVisitor(SkylineVisitor):
         fill = next(ctx.getChildren())
         #print('fill',fill)
         result = self.visit(fill)
-        print('result:',type(result))
         if (type(result) is Skyline):
             print('Voy a mostrar')
             result.mostrar(self.file)
-        print('---------------------',result.getArea(),'---------------------')
-        return result.getArea(),result.getAltura()
+            print('---------------------',result.getArea(),'---------------------')
+            return result.getArea(),result.getAltura()
+        else:
+            return result
 
 
     # Funció que visita l'AST on la seva arrel és una expressió
@@ -61,33 +62,83 @@ class SkTreeVisitor(SkylineVisitor):
             simbol = fills[1]
 
             # Si la expressió és entre 2 Skylines
-            if(type(f1) is Skyline and type(f2) is Skyline):
-                print('Expressio: Skyline + Skyline', f1, f2)
-                if (simbol == ctx.MES()):
-                    return f1.unio(f2)
-                if (simbol == ctx.MULT()):
-                    return f1.interseccio(f2)
-            # Si la expressió és entre Skyline i N
-            elif(type(f1) is Skyline and type(f2) is int):
-                print('Expressio: Skyline + Num', f1, f2)
-                if (simbol == ctx.MULT()):
-                    return f1.replicar(int(f2))
-                if (simbol == ctx.MES()):
-                    return f1.moureDreta(int(f2))
-                if (simbol == ctx.MENYS()):
-                    return f1.moureEsquerra(int(f2))
+            if(type(f1) is Skyline):
+                if(type(f2) is Skyline):
+                    if (simbol == ctx.MES()):
+                        return f1.unio(f2)
+                    if (simbol == ctx.MULT()):
+                        return f1.interseccio(f2)
+                elif(type(f2) is tuple):
+                    newSk = Skyline()
+                    newSk.afegir(f2[0],f2[1],f2[2])
+                    if (simbol == ctx.MES()):
+                        return f1.unio(newSk)
+                    if (simbol == ctx.MULT()):
+                        return f1.interseccio(newSk)
+                elif(type(f2) is int):
+                    if (simbol == ctx.MULT()):
+                        return f1.replicar(f2)
+                    if (simbol == ctx.MES()):
+                        return f1.moureDreta(f2)
+                    if (simbol == ctx.MENYS()):
+                        return f1.moureEsquerra(f2)
 
-            # Si la expressió és entre N i Skyline
-            elif (type(f2) is Skyline):
-                print('Expressio: Num + Skyline', f1, f2)
-                #f2.saveSkyline()
-                #fAux = f1.getSkyline()
-                if (simbol == ctx.MULT()):
-                    return f2.replicar(f1)
-                if (simbol == ctx.MES()):
-                    return f2.moureDreta(f1)
-                if (simbol == ctx.MENYS()):
-                    return f2.moureEsquerra(f1)
+            elif(type(f1) is tuple):
+                newSk = Skyline()
+                newSk.afegir(f1[0], f1[1], f1[2])
+                if(type(f2) is Skyline):
+                    if (simbol == ctx.MES()):
+                        return newSk.unio(f2)
+                    if (simbol == ctx.MULT()):
+                        return newSk.interseccio(f2)
+                elif(type(f2) is tuple):
+                    newSk2 = Skyline()
+                    newSk2.afegir(f2[0],f2[1],f2[2])
+                    if (simbol == ctx.MES()):
+                        return newSk.unio(newSk2)
+                    if (simbol == ctx.MULT()):
+                        return newSk.interseccio(newSk2)
+                elif(type(f2) is int):
+                    if (simbol == ctx.MULT()):
+                        return newSk.replicar(f2)
+                    if (simbol == ctx.MES()):
+                        return newSk.moureDreta(f2)
+                    if (simbol == ctx.MENYS()):
+                        return newSk.moureEsquerra(f2)
+
+            # Si la expressió és entre Skyline i N
+            elif(type(f1) is int):
+                if(type(f2) is Skyline):
+                    if (simbol == ctx.MULT()):
+                        return f2.replicar(int(f1))
+                    if (simbol == ctx.MES()):
+                        return f2.moureDreta(int(f1))
+                    if (simbol == ctx.MENYS()):
+                        return f2.moureEsquerra(int(f1))
+                if (type(f2) is tuple):
+                    newSk2 = Skyline()
+                    newSk2.afegir(f2[0], f2[1], f2[2])
+                    if (simbol == ctx.MULT()):
+                        return newSk2.replicar(int(f1))
+                    if (simbol == ctx.MES()):
+                        return newSk2.moureDreta(int(f1))
+                    if (simbol == ctx.MENYS()):
+                        return newSk2.moureEsquerra(int(f1))
+                if (type(f2) is int):
+                    if (simbol == ctx.MES()):
+                        return f1 + f2
+                    if (simbol == ctx.MENYS()):
+                        return f1 - f2
+                    if (simbol == ctx.MULT()):
+                        return f1 * f2
+                    if (simbol == ctx.DIV()):
+                        try:
+                            return f1 / f2
+                        except:
+                            print('Error, divisió per zero')
+                    if (simbol == ctx.POT()):
+                        return f1 ** f2
+
 
         elif(len(fills) == 2):
             simbol = fills[0]
@@ -125,9 +176,13 @@ class SkTreeVisitor(SkylineVisitor):
             elif(type(valor) is tuple):
                 newSk = Skyline()
                 newSk.afegir(valor[0],valor[1],valor[2])
+                self.taulaSimbols[variable] = newSk
                 newSk.mostrar('fig-{}.png'.format(variable))
                 newSk.saveSkyline('fig-{}.obj'.format(variable))
                 return newSk
+            elif (type(valor) is int):
+                self.taulaSimbols[variable] = valor
+                return valor
 
         except:
             print('Assignacio Error: Estem assignant el num',valor,'a la variable',variable)
@@ -141,11 +196,13 @@ class SkTreeVisitor(SkylineVisitor):
         #print('Consulta',variable)
 
         #Mirem si trobem la variable a la nostra taula de simbols, i retornem el seu valor si podem
-        if variable in self.taulaSimbols:
+        if variable in self.taulaSimbols and type(self.taulaSimbols[variable]) is Skyline:
             sk = self.taulaSimbols[variable]
             sk = sk.getSkyline('FIG-{}.obj'.format(variable))
             sk.mostrar(self.file)
             return sk
+        elif variable in self.taulaSimbols:
+            return self.taulaSimbols[variable]
 
         else:
             print('Consulta: La variable {}, no la tinc'.format(variable))
@@ -154,34 +211,31 @@ class SkTreeVisitor(SkylineVisitor):
     def visitEdifici(self, ctx:SkylineParser.EdificiContext):
         # Agafem el unic fill que té, el nom de la variable a consultar
         fills = [n for n in ctx.getChildren()]
-        #for f in fills:
-            #print(f.getText())
+
         xmin = self.visit(fills[1])
         altura = self.visit(fills[3])
         xmax = self.visit(fills[5])
 
-        #xmin = int(fills[1].getText())
-        #altura = int(fills[3].getText())
-        #xmax = int(fills[5].getText())
+        #Creem un nou Skyline i el retornem amb les dades corresponents
+        newSk = Skyline()
+        newSk.afegir(xmin,altura,xmax)
 
-        #print('xmin', xmin)
-        #print('altura', altura)
-        #print('xmax', xmax)
-        return xmin, altura, xmax
+        return newSk
 
 
     def visitEdificis(self, ctx:SkylineParser.EdificisContext):
         # Agafem el unic fill que té, el nom de la variable a consultar
         fills = [n for n in ctx.getChildren()]
-        llista = []
+        #Creem un nou Skyline (sera el que retornarem)
+        newSk = Skyline()
 
         for f in fills:
             tipus = type(f).__name__
-            #Només guardarem a la llista tots aquells tokens que siguin del tipus Edifici.
-            # No volem ni els [ ni res per l'estil
+            #Anem afegint al newSk els diversos edificis
             if ( tipus == 'EdificiContext'):
-                llista.append(f.getText())
-        return llista
+                valor = f.getText()
+                newSk.afegir(int(valor[1]),int(valor[3]),int(valor[5]))
+        return newSk
 
 
     def visitEdificiAleatori(self, ctx:SkylineParser.EdificiAleatoriContext):
@@ -195,15 +249,25 @@ class SkTreeVisitor(SkylineVisitor):
         xmin = self.visit(fills[7])
         xmax = self.visit(fills[9])
 
+        # Calculem aleatoriament el primer edifici
         random.seed()
-        h = random.randint(0,h)
-        w = random.randint(1,w)
-        mitad = int((xmin + xmax)/2)
-        xmin = random.randint(xmin, mitad)
-        xmax = random.randint(mitad, xmax)
+        newH = random.randint(0,h)
+        newW = random.randint(1,w)
+        newXmin = random.randint(xmin, xmax-newW)
+        newXmax = newXmin + w
 
+        newSk = Skyline()
+        newSk.afegir(newXmin,newH,newXmax)
 
-        return (n, h, w, xmin, xmax)
+        for edifici in range(2,n):
+            #Anem calculant aleatoriament la resta d'edificis
+            random.seed()
+            newH = random.randint(1, h)
+            newW = random.randint(1, w)
+            newXmin = random.randint(xmin, xmax-newW)
+            newXmax = newXmin + newW
+            newSk.afegir(newXmin,newH,newXmax)
+        return newSk
 
 
 del SkylineParser

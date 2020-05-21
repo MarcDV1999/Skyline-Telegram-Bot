@@ -28,9 +28,16 @@ def compilador(update, context):
     file = 'image.png'
     #instruccio =''.join(input)
     print('Instruccio',input)
-    area,altura = antlr.executarInstruccio(input)
-    context.bot.send_message(chat_id=update.effective_chat.id, text='Area: {}\nAltura: {}'.format(str(area),str(altura)))
-    context.bot.send_photo(chat_id=update.effective_chat.id, photo=open(file, 'rb'))
+    try:
+        area,altura = antlr.executarInstruccio(input)
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text='Area: {}\nAltura: {}'.format(str(area), str(altura)))
+        context.bot.send_photo(chat_id=update.effective_chat.id, photo=open(file, 'rb'))
+    except:
+        result = antlr.executarInstruccio(input)
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=result)
+
 
 def suma(update, context):
     try:

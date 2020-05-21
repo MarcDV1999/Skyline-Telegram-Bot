@@ -24,22 +24,17 @@ class Skyline():
 
 
 
-    def mostrar(self,file):
-        # Guardem Imatge, amb el segon parametre fem que la grafica es vegi més gran.
-        #print('Guardo Image de',self.llistaAccions)
-        self.figura.savefig(file, bbox_inches='tight')
-        plt.close(self.figura)
-        return self
-
     # Configura la grafica com nosaltres volguem
     def configureAxis(self):
         self.ax = self.figura.add_subplot(111, aspect='equal')
         self.ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
 
+    # Donat un edifici nou, recalcula les parts del Skyline
     def actualitzarParts(self,edifici):
 
         pass
+
 
     # Afegeix un nou edifici al SKyline
     def afegir(self, xmin, altura, xmax):
@@ -111,6 +106,7 @@ class Skyline():
         self.xminTotal = self.xminTotal + n
         return self
 
+
     # Donat un nombre n, desplacem l'Skyline n posicions a l'esquerra
     def moureEsquerra(self, n):
         # Resetejarem tots els atributs per a que s'adequin a la modificació
@@ -162,7 +158,8 @@ class Skyline():
         # Retornem l'altura i area toral del Skyline
         return self
 
-    #Donades unes accions, ens retorna una llista amb el Skyline dividid per parts
+
+    #Donades unes accions, ens retorna una llista amb el Skyline dividid per parts (Metode auxiliar de intersecció)
     def trobarParts(self,accions):
         alturaT = -1
         xmaxT = -1
@@ -216,18 +213,19 @@ class Skyline():
                 l.append([xminAnterior, alturaAnterior, xmaxAnterior])
         return l
 
-    # Donada una accio i una part d'un Skyline, ens retorna l'edifici que cap en el espai que delimita la part
+
+    # Donada una accio i una part d'un Skyline, ens retorna l'edifici que cap en el espai que delimita la part (Metode auxiliar de intersecció)
     def capDins(self,accio,part):
         #Per cabre, cal que l'edifici estigui abans del xmax de la part i que el xmin
-        if (part[2] > accio[0] and part[0] <= accio[2]):
+        if (part[2] > accio[0] and part[0] <= accio[2] and accio[0]):
             # Si l'accio es més petita que la part, podem pintar l'edifici sencer
             if(part[2] >= accio[2]):
-                print ('CapDins:',accio,part,accio[0], min(part[1],accio[1]), accio[2])
+                print ('CapDins Sencer:',accio,part,accio[0], min(part[1],accio[1]), accio[2])
                 return (accio[0],min(part[1],accio[1]),accio[2])
             # Si l'accio es més gran que la part, hem de pintar un tros del edifici
             else:
-                print ('CapDins:',accio,part,accio[0], min(part[1],accio[1]), part[2])
-                return (accio[0], min(part[1],accio[1]), part[2])
+                print ('CapDins tros:',accio,part,accio[0], min(part[1],accio[1]), part[2])
+                return (part[0], min(part[1],accio[1]), part[2])
         # Sino, no cap el edifici
         else:
             return ()
@@ -262,7 +260,6 @@ class Skyline():
                 if (len(edifici) > 0):
                     self.afegir(edifici[0], edifici[1], edifici[2])
         return self
-
 
 
     # Donat un Skyline, calcula l'unió entre el parametre implicit i b
@@ -312,35 +309,66 @@ class Skyline():
         return self
 
 
+
+
+
+
+
+
     # Consulta el paramtere a l'atribut llistaAccions
     def getLlistaAccions(self):
         return self.llistaAccions
+
 
     # Consulta l'atribut llistaParts
     def getLlistaParts(self):
         return self.llistaParts
 
+
+    # Consulta la figura del Skyline
     def getFigura(self):
         return self.figura
 
+
+    # Consulta l'area del Skyline
     def getArea(self):
         return self.areaTotal
 
+
+    # Consulta l'altura del Skyline
     def getAltura(self):
         return self.alturaTotal
 
+
+
+
+
+
+
+
+    # Retorna el skyline guardat a file en format Pickle
     def getSkyline(self,file):
         with open(file, 'rb') as file:
             fig1 = pickle.load(file)
             return fig1
 
+
+    # Guarda el skyline a file en format Pickle
     def saveSkyline(self,file):
         with open(file, 'wb') as file:
             pickle.dump(self, file)
 
 
+    #Guarda en el fitxer file el Skyline en formay imatge
+    def mostrar(self,file):
+        # Guardem Imatge, amb el segon parametre fem que la grafica es vegi més gran.
+        #print('Guardo Image de',self.llistaAccions)
+        self.figura.savefig(file, bbox_inches='tight')
+        plt.close(self.figura)
+        return self
 
 
+'''
 a = Skyline()
 a.afegir(1,2,4)
 #b = a.copy()
@@ -361,3 +389,4 @@ b.afegir(3,2,10)
 a.interseccio(b)
 a.mostrar('A.png')
 b.mostrar('B.png')
+'''
