@@ -92,8 +92,9 @@ class Skyline():
         self.figura = plt.figure()
         self.configureAxis()
 
-        # Reiniciem la llista de parts
+        # Reiniciem atributs
         self.llistaParts = []
+        self.areaTotal = 0
 
         # Anem re-calculan el Xmin, Altura i Xmax sumantt el offset, i anem dibuixant pas a pas.
         for accio in ultimesAccions:
@@ -120,8 +121,9 @@ class Skyline():
         self.figura = plt.figure()
         self.configureAxis()
 
-        # Reiniciem la llista de parts
+        # Reiniciem atributs
         self.llistaParts = []
+        self.areaTotal = 0
 
         # Comprovem que no ens passem al desplaçar a l'esquerra
         if (self.xminTotal - n < 0):
@@ -253,6 +255,7 @@ class Skyline():
 
         # Especifiquem que volem pintar la interseccio de color blau
         self.color = 'Blue'
+        self.areaTotal = 0
 
         # Per cada nova accio a afegir, mirarem si cap dins de cada part del skyline principal. Si cap,
         # pintarem l'intersecció
@@ -284,7 +287,6 @@ class Skyline():
 
         # Ens quedem amb el inici del Skyline i posem del reves la llista de accions
         inici = self.xminTotal
-        fi = self.xmaxTotal
         #print('Mirall: accions', self.llistaAccions)
 
         # Fem una copia per a poder iterar sobre ella, si iteressim sobre l'atribut directament,
@@ -298,19 +300,25 @@ class Skyline():
         self.configureAxis()
         self.llistaAccions = []
 
-        # Reiniciem la llista de parts
+        # Reiniciem atributs
         self.llistaParts = []
+        self.areaTotal = 0
+
+        xminAnterior = ultimesAccions[0][2]
 
         # Per cada accio (amb la llista girada), anem dibuixant recalculant el inici i el final
         for accio in ultimesAccions:
             base = accio[2] - accio[0]
             altura = accio[1]
+            espai = xminAnterior - accio[2] #Espai entre la figura actual i la següent
 
-            xmin = inici
+            #Coloquem la figura al inici més el espai que li pertoca
+            xmin = inici + espai
             xmax = xmin + base
             print('Mirall: Nou edifici', xmin, altura, xmax)
             self.afegir(xmin, altura, xmax)
             inici = xmax
+            xminAnterior = accio[0]
 
         return self
 
