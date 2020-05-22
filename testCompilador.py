@@ -8,7 +8,8 @@ from gen import SkylineLexer as SkLexer
 from gen import SkTreeVisitor
 
 class Interpret():
-
+    def __init__(self):
+        self.visitor = SkTreeVisitor.SkTreeVisitor()
 
     def executarInstruccio(self,instruccio):
         input_stream = InputStream(instruccio)
@@ -21,7 +22,19 @@ class Interpret():
         # print('Tree',tree.toStringTree(recog=parser))
 
         # Creem un visitor, per a poder recorrer el arbre generat anteriorment
-        visitor = SkTreeVisitor.SkTreeVisitor()
-        result = visitor.visit(tree)
+        result = self.visitor.visit(tree)
         #print(result)
         return result
+
+    def getTaulaSimbols(self):
+        return self.visitor.getTaulaSimbols()
+
+    def setTaulaSimbols(self, dict):
+        self.visitor.setTaulaSimbols(dict)
+
+    def saveSkyline(self, id):
+        self.visitor.saveSkyline(id)
+
+    def loadSkyline(self, id):
+        return self.visitor.loadSkyline(id)
+

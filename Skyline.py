@@ -5,6 +5,9 @@ import pickle
 
 class Skyline():
 
+    #Per a que no saltin Warnongs dels threads
+    plt.switch_backend('Agg')
+
     def __init__(self):
         # Atributs relacionats amb wl matplotlib per a poder dibuixar els rectangles
         self.figura = plt.figure()
@@ -20,8 +23,6 @@ class Skyline():
         # Llista on anirem guardant tots els passos que anem fent per a generar el Skyline
         self.llistaAccions = []
         self.llistaParts = []
-        self.pickleFile = 'plots.obj'
-
 
 
     # Configura la grafica com nosaltres volguem
@@ -72,7 +73,7 @@ class Skyline():
         self.llistaAccions.append((inici, altura, fi))
         #new.setLlistaAccions(self.llistaAccions.append((xmin, altura, xmax)))
 
-        self.actualitzarParts((inici,altura,fi))
+        #self.actualitzarParts((inici,altura,fi))
         #new.setParts(self.llistaParts)
         #new.actualitzarParts((xmin,altura,xmax))
 
@@ -254,7 +255,7 @@ class Skyline():
         self.configureAxis()
 
         # Especifiquem que volem pintar la interseccio de color blau
-        self.color = 'Blue'
+        #self.color = 'Blue'
         self.areaTotal = 0
 
         # Per cada nova accio a afegir, mirarem si cap dins de cada part del skyline principal. Si cap,

@@ -13,14 +13,19 @@ else:
 # This class defines a complete generic visitor for a parse tree produced by SkylineParser.
 
 class SkTreeVisitor(SkylineVisitor):
-    a = Skyline()
-    b = Skyline()
-    a.afegir(1,2,3)
-    b.afegir(3,2,10)
-    a.saveSkyline('FIG-{}.obj'.format('a'))
-    b.saveSkyline('FIG-{}.obj'.format('b'))
-    taulaSimbols = {'a':a,'b':b}
-    file = 'image.png'
+    #a = Skyline()
+    #b = Skyline()
+    #a.afegir(1,2,3)
+    #b.afegir(3,2,10)
+    #a.saveSkyline('FIG-{}.pickle'.format('a'))
+    #b.saveSkyline('FIG-{}.pickle'.format('b'))
+    #taulaSimbols = {'a':a,'b':b}
+
+    def __init__(self):
+        self.taulaSimbols = {}
+        self.pickleRoot = 'Imatges/'
+        self.SkyDBRoot = 'Skylines_DB/'
+        self.file = self.pickleRoot+'image.png'
 
     # Funció que visita l'arrel del AST
     def visitRoot(self, ctx:SkylineParser.RootContext):
@@ -120,23 +125,23 @@ class SkTreeVisitor(SkylineVisitor):
         fills = [n for n in ctx.getChildren()]
         # El valor, l'obtindrem de evaluar l'expressió del 3r fill
         variable = fills[0].getText()
-        print('Assignacio: valor->',fills[2].getText())
+        #print('Assignacio: valor->',fills[2].getText())
         valor = self.visit(fills[2])
 
-        print('Assignacio: Guardarem a ->',variable)
-        print('Assignacio: valor', str(valor))
+        #print('Assignacio: Guardarem a ->',variable)
+        #print('Assignacio: valor', str(valor))
 
         try:
             #Si el valor es un Skyline, l'afegim a la taula, el guardem, i el mostrem
             if(type(valor) is Skyline):
-                self.taulaSimbols[variable] = valor
-                self.taulaSimbols[variable].saveSkyline('FIG-{}.obj'.format(variable))
-                self.taulaSimbols[variable] = valor.mostrar(self.file)
+                self.taulaSimbols[variable] = valor.getArea()
+                valor.saveSkyline('{}FIG-{}.pickle'.format(self.pickleRoot,variable))
+                #valor.mostrar(self.file)
                 return valor
 
-            elif (type(valor) is int):
-                self.taulaSimbols[variable] = valor
-                return valor
+            #elif (type(valor) is int):
+                #self.taulaSimbols[variable] = valor
+                #return valor
 
         except:
             print('Assignacio Error: Estem assignant el num',valor,'a la variable',variable)
@@ -150,10 +155,10 @@ class SkTreeVisitor(SkylineVisitor):
         #print('Consulta',variable)
 
         #Mirem si trobem la variable a la nostra taula de simbols, i retornem el seu valor si podem
-        if variable in self.taulaSimbols and type(self.taulaSimbols[variable]) is Skyline:
-            sk = self.taulaSimbols[variable]
-            sk = sk.getSkyline('FIG-{}.obj'.format(variable))
-            sk.mostrar(self.file)
+        if variable in self.taulaSimbols:
+            sk = Skyline()
+            sk = sk.getSkyline('{}FIG-{}.pickle'.format(self.pickleRoot,variable))
+            #sk.mostrar(self.file)
             return sk
         elif variable in self.taulaSimbols:
             return self.taulaSimbols[variable]
@@ -173,7 +178,7 @@ class SkTreeVisitor(SkylineVisitor):
         #Creem un nou Skyline i el retornem amb les dades corresponents
         newSk = Skyline()
         newSk.afegir(xmin,altura,xmax)
-
+        print('visitEdifici:',newSk)
         return newSk
 
 
@@ -223,6 +228,30 @@ class SkTreeVisitor(SkylineVisitor):
             newSk.afegir(newXmin,newH,newXmax)
         return newSk
 
+
+    def getTaulaSimbols(self):
+        return self.taulaSimbols
+
+    def setTaulaSimbols(self, dict):
+        self.taulaSimbols = dict
+
+    def saveSkyline(self,id):
+        sk = Skyline()
+        sk = sk.getSkyline('{}FIG-{}.pickle'.format(self.pickleRoot, id))
+        sk.saveSkyline('{}{}.sky'.format(self.SkyDBRoot, id))
+
+    def loadSkyline(self,id):
+        try:
+            sk = Skyline()
+            sk = sk.getSkyline('{}{}.sky'.format(self.SkyDBRoot, id))
+            self.taulaSimbols[id] = sk.getArea()
+            sk.saveSkyline('{}FIG-{}.pickle'.format(self.pickleRoot, id))
+            sk.mostrar(self.file)
+            return sk
+
+        except:
+            print('No tinc aquest Skyline guardat')
+            return 'No tinc aquest Skyline guardat'
 
 del SkylineParser
 
