@@ -1,20 +1,19 @@
-import sys
 from antlr4 import *
 
 # from ..gen.SkylineLexer import SkylineLexer as SkLexer
 # from ..gen.SkylineParser import SkylineParser as SkParser
-from gen import SkylineParser as SkParser
-from gen import SkylineLexer as SkLexer
-from gen import SkTreeVisitor
+from cl.gen import SkylineParser as SkParser, SkylineLexer as SkLexer, SkTreeVisitor
+
 
 class Interpret():
     def __init__(self):
         self.visitor = SkTreeVisitor.SkTreeVisitor()
 
-    def executarInstruccio(self,instruccio):
+    def executarInstruccio(self, instruccio):
         input_stream = InputStream(instruccio)
         lexer = SkLexer.SkylineLexer(input_stream)
         token_stream = CommonTokenStream(lexer)
+
         parser = SkParser.SkylineParser(token_stream)
         tree = parser.root()
 
@@ -23,7 +22,7 @@ class Interpret():
 
         # Creem un visitor, per a poder recorrer el arbre generat anteriorment
         result = self.visitor.visit(tree)
-        #print(result)
+        # print(result)
         return result
 
     def getTaulaSimbols(self):
@@ -37,4 +36,3 @@ class Interpret():
 
     def loadSkyline(self, id):
         return self.visitor.loadSkyline(id)
-

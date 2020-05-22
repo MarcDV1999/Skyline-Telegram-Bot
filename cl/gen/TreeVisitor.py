@@ -1,10 +1,9 @@
-# Generated from /Users/marcdomenech/Desktop/UPC/Computacio/LP/Practica Pyhton i Compiladors/Compilador/Skyline.g4 by ANTLR 4.8
-from antlr4 import *
+# Generated from /Users/marcdomenech/Desktop/UPC/Computacio/LP/Practica Pyhton i Compiladors/cl/Skyline.g4 by ANTLR 4.8
 if __name__ is not None and "." in __name__:
     from .SkylineParser import SkylineParser
     from .SkylineVisitor import SkylineVisitor
 else:
-    from gen.SkylineParser import SkylineParser
+    from cl.gen.SkylineParser import SkylineParser
     from SkylineVisitor import SkylineVisitor
 
 # This class defines a complete generic visitor for a parse tree produced by SkylineParser.
