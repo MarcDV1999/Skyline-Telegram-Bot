@@ -25,7 +25,7 @@ class SkTreeVisitor(SkylineVisitor):
         self.taulaSimbols = {}
         self.pickleRoot = 'Imatges/'
         self.SkyDBRoot = 'Skylines_DB/'
-        self.file = self.pickleRoot+'image.png'
+        self.file = self.pickleRoot+'FigActual.png'
 
     # Funció que visita l'arrel del AST
     def visitRoot(self, ctx:SkylineParser.RootContext):
@@ -47,6 +47,8 @@ class SkTreeVisitor(SkylineVisitor):
     def visitExpr(self, ctx:SkylineParser.ExprContext):
         # Agafem tots els fills i mirem si hem arribat a una fulla o no
         fills = [n for n in ctx.getChildren()]
+        for f in fills:
+            print('Fills', f.getText())
 
         # Si només tenim un fill, hem arribat a un NUM o una consulta
         if (len(fills) == 1):
@@ -62,37 +64,44 @@ class SkTreeVisitor(SkylineVisitor):
         # Sino, vol dir que estem en una expressió, formada per dos parametres i un simbol.
         # Tindrem algo del estil [3,+,4] per exemple
         # En aquest cas retornem el resultat de l'operació desitjada
+        #Cas en el que volem  fer operacions noramals
         elif(len(fills) == 3):
             print('Expressio',len(fills))
             f1 = self.visit(fills[0])
             f2 = self.visit(fills[2])
             simbol = fills[1]
 
+            #Si l'expressió és un ( expr ), em quedo amb lo de dins només
+            if (f1 is None and f2 is None):
+                return  self.visit(fills[1])
+
             # Si la expressió és entre 2 Skylines
             if(type(f1) is Skyline):
                 if(type(f2) is Skyline):
+                    fAux = self.duplicarSkyline(f1)
                     if (simbol == ctx.MES()):
-                        return f1.unio(f2)
+                        return fAux.unio(f2)
                     if (simbol == ctx.MULT()):
-                        return f1.interseccio(f2)
+                        return fAux.interseccio(f2)
                 elif(type(f2) is int):
+                    fAux = self.duplicarSkyline(f1)
                     if (simbol == ctx.MULT()):
-                        return f1.replicar(f2)
+                        return fAux.replicar(f2)
                     if (simbol == ctx.MES()):
-                        return f1.moureDreta(f2)
+                        return fAux.moureDreta(f2)
                     if (simbol == ctx.MENYS()):
-                        return f1.moureEsquerra(f2)
-
+                        return fAux.moureEsquerra(f2)
 
             # Si la expressió és entre Skyline i N
             elif(type(f1) is int):
                 if(type(f2) is Skyline):
+                    fAux = self.duplicarSkyline(f2)
                     if (simbol == ctx.MULT()):
-                        return f2.replicar(int(f1))
+                        return fAux.replicar(int(f1))
                     if (simbol == ctx.MES()):
-                        return f2.moureDreta(int(f1))
+                        return fAux.moureDreta(int(f1))
                     if (simbol == ctx.MENYS()):
-                        return f2.moureEsquerra(int(f1))
+                        return fAux.moureEsquerra(int(f1))
                 if (type(f2) is int):
                     if (simbol == ctx.MES()):
                         return f1 + f2
@@ -109,11 +118,13 @@ class SkTreeVisitor(SkylineVisitor):
                         return f1 ** f2
 
 
+        #Cas en que volem fer un mirall
         elif(len(fills) == 2):
             simbol = fills[0]
             edifici = self.visit(fills[1])
             if(simbol == ctx.MENYS() and type(edifici) is Skyline):
-                return edifici.mirall()
+                fAux = self.duplicarSkyline(edifici)
+                return fAux.mirall()
 
 
 
@@ -134,14 +145,8 @@ class SkTreeVisitor(SkylineVisitor):
         try:
             #Si el valor es un Skyline, l'afegim a la taula, el guardem, i el mostrem
             if(type(valor) is Skyline):
-                self.taulaSimbols[variable] = valor.getArea()
-                valor.saveSkyline('{}FIG-{}.pickle'.format(self.pickleRoot,variable))
-                #valor.mostrar(self.file)
+                self.taulaSimbols[variable] = valor
                 return valor
-
-            #elif (type(valor) is int):
-                #self.taulaSimbols[variable] = valor
-                #return valor
 
         except:
             print('Assignacio Error: Estem assignant el num',valor,'a la variable',variable)
@@ -152,19 +157,14 @@ class SkTreeVisitor(SkylineVisitor):
         # Agafem el unic fill que té, el nom de la variable a consultar
         fills = [n for n in ctx.getChildren()]
         variable = fills[0].getText()
-        #print('Consulta',variable)
 
         #Mirem si trobem la variable a la nostra taula de simbols, i retornem el seu valor si podem
         if variable in self.taulaSimbols:
-            sk = Skyline()
-            sk = sk.getSkyline('{}FIG-{}.pickle'.format(self.pickleRoot,variable))
-            #sk.mostrar(self.file)
-            return sk
-        elif variable in self.taulaSimbols:
             return self.taulaSimbols[variable]
 
         else:
             print('Consulta: La variable {}, no la tinc'.format(variable))
+            return None
 
 
     def visitEdifici(self, ctx:SkylineParser.EdificiContext):
@@ -236,22 +236,29 @@ class SkTreeVisitor(SkylineVisitor):
         self.taulaSimbols = dict
 
     def saveSkyline(self,id):
-        sk = Skyline()
-        sk = sk.getSkyline('{}FIG-{}.pickle'.format(self.pickleRoot, id))
-        sk.saveSkyline('{}{}.sky'.format(self.SkyDBRoot, id))
+        try:
+            sk = self.taulaSimbols[id]
+            sk.saveSkyline('{}{}.sky'.format(self.SkyDBRoot, id))
+            sk.mostrar(self.file)
+        except:
+            print('No tinc aquest Skyline')
 
     def loadSkyline(self,id):
         try:
             sk = Skyline()
             sk = sk.getSkyline('{}{}.sky'.format(self.SkyDBRoot, id))
-            self.taulaSimbols[id] = sk.getArea()
-            sk.saveSkyline('{}FIG-{}.pickle'.format(self.pickleRoot, id))
+            self.taulaSimbols[id] = sk
             sk.mostrar(self.file)
             return sk
 
         except:
             print('No tinc aquest Skyline guardat')
-            return 'No tinc aquest Skyline guardat'
+            return None
+
+    def duplicarSkyline(self, sk):
+        sk.saveSkyline('{}SkylineActual.pickle'.format(self.pickleRoot))
+        sk = sk.getSkyline('{}SkylineActual.pickle'.format(self.pickleRoot))
+        return sk
 
 del SkylineParser
 

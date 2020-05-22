@@ -33,13 +33,13 @@ edificiAleatori :  '{' expr ',' expr ',' expr ',' expr ',' expr '}';
 
 // Definim les expresions de suma, resta ... de nombres naturals
 
-expr :  expr MES expr
-    | expr MENYS expr
+expr :  '(' expr ')' // Mes prioritat
+    | MENYS expr
     | expr MULT expr
     | expr DIV expr
-    | <assoc=right> expr POT expr // La potencia te associativitat per la dreta (cal especificar-ho)
+    | expr (MES | MENYS) expr
+    //| <assoc=right> expr POT expr // La potencia te associativitat per la dreta (cal especificar-ho)
     | consulta
-    | MENYS expr
     | edifici
     | edificis
     | edificiAleatori

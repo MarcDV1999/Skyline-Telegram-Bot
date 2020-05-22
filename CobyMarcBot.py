@@ -7,7 +7,7 @@ class Bot():
     def __init__(self):
         # declara una constant amb el access token que llegeix de token.txt
         TOKEN = open('token.txt').read().strip()
-        self.file = 'Imatges/image.png'
+        self.file = 'Imatges/FigActual.png'
 
         # crea objectes per treballar amb Telegram
         updater = Updater(token=TOKEN, use_context=True)
@@ -121,15 +121,14 @@ Pots posar-te en contacte amb ell via mail a:
         text = 'Aqui tens els Skylines que tens guardats:\n\n'
         if(len(taula) > 0):
             for key,valor in taula.items():
-                text += '*{}* ----> Àrea = *{}*\n\n'.format(key,valor)
+                area = valor.getArea()
+                text += '*{}* ----> Àrea = *{}*\n\n'.format(key,area)
         else:
-
             text += '''
         Encara no tens cap Skyline guardat.
             
         Pots consultar com guardar-ne amb la comanda */help*
             '''
-
         context.bot.send_message(chat_id=update.effective_chat.id,parse_mode='Markdown',text=text)
 
 
@@ -144,6 +143,8 @@ Pots posar-te en contacte amb ell via mail a:
             id = str(context.args[0])
             if (id in self.antlr.getTaulaSimbols()):
                 self.antlr.saveSkyline(id)
+            else:
+                print('No tinc cap edifici amb aquest ID')
         except:
             print('No he pogut guardar l\'imatge de',context.args[0])
 
@@ -170,7 +171,6 @@ Pots posar-te en contacte amb ell via mail a:
         print('Instruccio',input)
         try:
             area,altura = self.antlr.executarInstruccio(input)
-            print('Aqui')
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text='Area: {}\nAltura: {}'.format(str(area), str(altura)))
             context.bot.send_photo(chat_id=update.effective_chat.id, photo=open(self.file, 'rb'))
