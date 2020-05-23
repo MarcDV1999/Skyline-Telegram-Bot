@@ -23,8 +23,8 @@ class Bot():
         dispatcher.add_handler(CommandHandler('clean', self.clean))
         dispatcher.add_handler(CommandHandler('save', self.save_id))
         dispatcher.add_handler(CommandHandler('load', self.load_id))
-        dispatcher.add_handler(CommandHandler('compilador', self.compilador))
-        dispatcher.add_handler(MessageHandler(filters=Filters.text, callback=self.compilador))
+        # Enllaça un missatge normal de text amb la funció interpret
+        dispatcher.add_handler(MessageHandler(filters=Filters.text, callback=self.interpret))
 
         # Creem el objecte Interpret
         self.antlr = Interpret()
@@ -35,9 +35,10 @@ class Bot():
     # Defineix una funció que saluda i que s'executarà quan el bot rebi el missatge /start
     # update i context contenen informació interessant del bot
     def start(self, update, context):
-
+        nom = update.message.from_user.first_name
+        nomBot = 'Bob l\'Arquitecte'
         text = '''
-Hola amic. Sóc en `Coby` 🤖, un Bot que t\'ajuda a crear Skylines.
+Hola {}. Sóc en `{}` 🤖, un Bot que t\'ajuda a crear Skylines.
 
 Pots escriure les següents *comandes* per a obtenir *més informació* 🤙🏻
 
@@ -55,7 +56,7 @@ Pots escriure les següents *comandes* per a obtenir *més informació* 🤙🏻
 -> */save id*: Guarda un Skyline per a que puguis fer-lo servir quan vulguis.
 
 -> */load id*: Carrega un skyline que tenies guardat.
-        '''
+        '''.format(nom,nomBot)
 
         context.bot.send_message(chat_id=update.effective_chat.id, parse_mode='Markdown', text=text)
 
@@ -74,16 +75,16 @@ Pots escriure les següents *comandes* per a obtenir *més informació* 🤙🏻
 
         -> `Exemple: (1,2,3)`
 
-En aquest cas estariem creant un edifici que comença a 1, acaba en 3 i té una Alçada de 2. _(Inici,Alçada,Fi)_
+En aquest cas estariem creant un edifici que comença en `x = 1`, acaba en `x = 3` i té una alçada de `2`. _(Inici,Alçada,Fi)_
 
 
-A més puc operar amb aquests edificis i crear Skylines:
+A més puc operar amb aquest edifici i crear tants Skylines com jo vulgui:
 
-*Crear Skyline Simple:* Crear Skyline amb un edifici predefinit -> `Exemple: (6,7,8)`
+*Crear Skyline Simple:* Puc crear Skyline amb un edifici que tu em diguis -> `Exemple: (6,7,8)`
 
-*Crear Skyline Compost:* Crear Skyline amb diversos edificis predefinits -> `Exemple: [(1,2,3),(4,5,6),(7,8,9)]`
+*Crear Skyline Compost:* Puc crear Skyline amb diversos edificis a la vegada -> `Exemple: [(1,2,3),(4,5,6),(7,8,9)]`
 
-*Crear Skyline Aleatori:* Construeix [n] edificis, cadascun d’ells amb una alçada aleatòria entre *[0 i h]*, amb una *amplada aleatòria* entre *[1 i w]*, i una posició d’inici i de final aleatòria entre *[xmin i xmax]*. `{n, h, w, xmin, xmax}` -> `Exemple: {200,50,10,1,200}`
+*Crear Skyline Aleatori:* Puc crear un Skyline amb *[n]* edificis, cadascun d’ells amb una alçada aleatòria entre *[0 i h]*, amb una amplada aleatòria entre *[1 i w]*, i una posició d’inici i de final aleatòria entre *[xmin i xmax]*. `{n, h, w, xmin, xmax}` -> `Exemple: {200,50,10,1,200}`
 
 
 *Assignació:* Etiquetar Skyline -> `Exemple: miEdificio :=(6,7,8)`
@@ -107,7 +108,7 @@ A més puc operar amb aquests edificis i crear Skylines:
     # Defineix una funció que mostra l'autor del Bot (Comanda /author)
     def author(self, update, context):
         text = '''
-    El meu autor és en *Marc Domènech* 🙃
+El meu autor és en *Marc Domènech* 🙃
 
 Pots posar-te en contacte amb ell via mail a:
 
@@ -116,9 +117,11 @@ Pots posar-te en contacte amb ell via mail a:
 
     # Defineix la funció que mostra el llistat de variables
     def lst(self, update, context):
-
+        # Descarreguem la taula de simbols
         taula = self.antlr.getTaulaSimbols()
         text = 'Aqui tens els Skylines que tens guardats:\n\n'
+
+        # Si la taula no està buida, extreiem els simbols
         if(len(taula) > 0):
             for key, valor in taula.items():
                 area = valor.getArea()
@@ -133,13 +136,15 @@ Pots posar-te en contacte amb ell via mail a:
 
     # Defineix la funció que Reseteja el llistat de variables
     def clean(self, update, context):
-        text = 'Esborro tots els Skylines que tenies guardats\n\n'
         self.antlr.setTaulaSimbols({})
+        text = 'Esborro tots els Skylines que tenies guardats\n\n'
         context.bot.send_message(chat_id=update.effective_chat.id, parse_mode='Markdown', text=text)
 
     # Defineix la funció que guarda un Skyline en un fitxer .sky
     def save_id(self, update, context):
         id = str(context.args[0])
+
+        # Si tenim l'ID en la taula de simbols, el guardarem, sino mostrarem un missatge d'error
         if (id in self.antlr.getTaulaSimbols()):
             self.antlr.saveSkyline(id)
             text = 'He guardat l\'edifici ' + id
@@ -151,31 +156,39 @@ Pots posar-te en contacte amb ell via mail a:
     # Defineix la funció que carrega un Skyline d'un fitxer .sky
     def load_id(self, update, context):
         try:
+            # Extraiem el ID i carreguem el Skyline
             id = str(context.args[0])
             newSk = self.antlr.loadSkyline(id)
-            area = str(newSk.getArea())
-            alçada = str(newSk.getalçada())
 
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text='Area: {}\nalçada: {}'.format(area, alçada))
+            #Extreiem l'area i l'altura
+            area = str(newSk.getArea())
+            alçada = str(newSk.getAltura())
+
+            context.bot.send_message(chat_id=update.effective_chat.id, text='Area: {}\nalçada: {}'.format(area, alçada))
             context.bot.send_photo(chat_id=update.effective_chat.id, photo=open(self.file, 'rb'))
+        # Si no podem mostrarem un missatge d'error
         except Exception as _:
             text = 'No tinc l\'imatge de ' + context.args[0]
             print(text)
             context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
     # Defineix la funció que interpreta les operacions que va escribint el usuari per teclat
-    def compilador(self, update, context):
+    def interpret(self, update, context):
         input = update.message.text
         print('Instruccio', input)
         try:
+            # Provem d'extreure el resultat de executar l'instrucció
+            # Si ens retorna dos valors, es que el resultat ha estat
+            # un Skyline
             area, altura = self.antlr.executarInstruccio(input)
             context.bot.send_photo(chat_id=update.effective_chat.id, photo=open(self.file, 'rb'))
             context.bot.send_message(chat_id=update.effective_chat.id, text='Area: {}\nalçada: {}'.format(str(area), str(altura)))
+        # En aquest cas el resultat no ha estat un Skyline, pot ser un
+        # nombre o que l'expressió no era vàlida
         except Exception as _:
             result = self.antlr.executarInstruccio(input)
             if result is None:
-                text = 'T\'has equivocat escrivint, torna a intentar-ho'
+                text = 'No entenc el que em vols dir. Intenta-ho un altre cop'
                 print(text)
             else:
                 text = result

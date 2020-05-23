@@ -129,7 +129,7 @@ class Skyline():
         fi = self.xmaxTotal
         for i in range(1, n):
             for accio in ultimesAccions:
-                # Anem calculan el Xmin, ALtura i Xmax, i anem dibuixant pas a pas.
+                # Anem calculan el Xmin, Altura i Xmax, i anem dibuixant pas a pas.
                 altura = accio[1]
                 xmin = (fi * i) + (accio[0])
                 xmax = (fi * i) + (accio[2])
@@ -263,7 +263,6 @@ class Skyline():
 
         # Ens quedem amb el inici del Skyline i posem del reves la llista de accions
         inici = self.xminTotal
-        # print('Mirall: accions', self.llistaAccions)
 
         # Fem una copia per a poder iterar sobre ella, si iteressim sobre l'atribut directament,
         # entariem en bucle infinit ja que cada cop que dibuixem, afegim una entrada a la llista d'accions
@@ -317,8 +316,8 @@ class Skyline():
     # Retorna el skyline guardat a file en format Pickle
     def getSkyline(self, file):
         with open(file, 'rb') as file:
-            fig1 = pickle.load(file)
-            return fig1
+            newSk = pickle.load(file)
+            return newSk
 
     # Guarda el skyline a file en format Pickle
     def saveSkyline(self, file):
@@ -328,7 +327,6 @@ class Skyline():
     # Guarda en el fitxer file el Skyline en formay imatge
     def mostrar(self, file):
         # Guardem Imatge, amb el segon parametre fem que la grafica es vegi més gran.
-        # print('Guardo Image de',self.llistaAccions)
         self.figura.savefig(file, bbox_inches='tight')
         plt.close(self.figura)
         return self
