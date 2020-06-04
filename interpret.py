@@ -1,7 +1,5 @@
 from antlr4 import *
 
-# from ..gen.SkylineLexer import SkylineLexer as SkLexer
-# from ..gen.SkylineParser import SkylineParser as SkParser
 from cl.gen import SkylineParser as SkParser, SkylineLexer as SkLexer, SkTreeVisitor
 
 
@@ -31,8 +29,8 @@ class Interpret():
     def setTaulaSimbols(self, dict):
         self.visitor.setTaulaSimbols(dict)
 
-    def saveSkyline(self, id):
-        self.visitor.saveSkyline(id)
+    def saveSkyline(self, id, username):
+        self.visitor.saveSkyline(id, username)
 
-    def loadSkyline(self, id):
-        return self.visitor.loadSkyline(id)
+    def loadSkyline(self, id, username):
+        return self.visitor.loadSkyline(id, username)

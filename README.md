@@ -158,7 +158,7 @@ a := [(1,2,3),(3,2,5),(5,5,10)]
 
 
 
-![1-llistaAccions](/Users/marcdomenech/Desktop/UPC/Computacio/LP/Skyline Telegram Bot/ImatgesReadme/1-llistaAccions.jpg)
+![1-llistaAccions](/Users/marcdomenech/Desktop/UPC/Computacio/LP/Skyline Telegram Bot/ImatgesDocument/llistaAccions.jpg)
 
 - **self.llistaAccions**: Llista en la que guardem el llistat de accions que han fet possible generar el Skyline. En el Skyline de la figura tindriem:
 
@@ -180,10 +180,6 @@ a := [(1,2,3),(3,2,5),(5,5,10)]
 
 ## Algorismes interessants
 
-### Duplicar Skylines
-
-Donat que la llibreria matplotlib, no és possible fer una copia de una gràfica ,al igualar una grafica a una variable, iguales el punter, és per això que modificant la 'còpia', modifiquem igualment l'original. Per aquest motiu he hagut de buscar una alternativa per a poder conseguir fer una còpia. En aquest cas he optat per guardar-me la gràfica original en un fitxer .pickle. Després he extret la gràfica del fitxer en una altra variable, així doncs conseguir tenir en la variable una copia i no una referencia.
-
 ### Calcular les parts d'un edifici
 
 De cara a implementar les operacions de unió i intersecció, m'ha semblat interessant que cada Skyline tingues un atribut "_llistaParts_". Per a poder calcular aquesta llista només ha calgut, recorrer la llista d'accions ordenada i sintetitzar al maxim les accions, formant parts.
@@ -201,3 +197,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](https://gi
 ## Agraïments
 
 - Gràcies al meu germà per dedicar-se a testejar que el bot funciona correctament.
+

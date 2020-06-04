@@ -7,7 +7,7 @@ import pickle
 class Skyline():
 
     # Per a que no saltin Warnongs dels threads
-    plt.switch_backend('Agg')
+    # plt.switch_backend('Agg')
 
     # Constructor
     def __init__(self):
@@ -25,6 +25,40 @@ class Skyline():
         # Llista on anirem guardant tots els passos que anem fent per a generar el Skyline
         self.llistaAccions = []
         self.llistaParts = []
+
+    # Redefinim el operador de suma
+    def __add__(self, other):
+        tipus = type(other)
+        print('Suma, tipus', tipus)
+        if(tipus is Skyline):
+            return self.unio(other)
+        elif(tipus is int):
+            print('Suma Skyline + Int')
+            return self.moureDreta(other)
+        else:
+            return None
+
+    # Redefinim el operador de resta
+    def __sub__(self, other):
+        tipus = type(other)
+        if (tipus is int):
+            return self.moureEsquerra(other)
+        else:
+            return None
+
+    # Redefinim el operador de multiplicacio
+    def __mul__(self, other):
+        tipus = type(other)
+        if (tipus is Skyline):
+            return self.interseccio(other)
+        elif (tipus is int):
+            return self.replicar(other)
+        else:
+            return None
+
+    # Redefinim el operador de negacio
+    def __neg__(self):
+        return self.mirall()
 
     # Configura la grafica com nosaltres volguem
     def configureAxis(self):
@@ -63,46 +97,26 @@ class Skyline():
 
     # Donat un nombre n, desplacem l'Skyline n posicions a la dreta
     def moureDreta(self, n):
+        newSk = Skyline()
         # Resetejarem tots els atributs per a que s'adequin a la modificació
         novaLlistaAccions = []
         ultimesAccions = self.llistaAccions.copy()
-
-        # Borrem la fiura actual per a poder repintar la nova
-        self.figura.clf()
-        self.figura = plt.figure()
-        self.configureAxis()
-
-        # Reiniciem atributs
-        self.llistaParts = []
-        self.areaTotal = 0
 
         # Anem re-calculan el Xmin, Altura i Xmax sumantt el offset, i anem dibuixant pas a pas.
         for accio in ultimesAccions:
             novaAccio = (accio[0] + n, accio[1], accio[2] + n)
             novaLlistaAccions.append(novaAccio)
 
-            self.afegir(novaAccio[0], novaAccio[1], novaAccio[2])
+            newSk.afegir(novaAccio[0], novaAccio[1], novaAccio[2])
 
-        # Reiniciem els atributs
-        self.llistaAccions = novaLlistaAccions
-        self.xmaxTotal = self.xmaxTotal + n
-        self.xminTotal = self.xminTotal + n
-        return self
+        return newSk
 
     # Donat un nombre n, desplacem l'Skyline n posicions a l'esquerra
     def moureEsquerra(self, n):
+        newSk = Skyline()
         # Resetejarem tots els atributs per a que s'adequin a la modificació
         novaLlistaAccions = []
         ultimesAccions = self.llistaAccions.copy()
-
-        # Borrem la fiura actual per a poder repintar la nova
-        self.figura.clf()
-        self.figura = plt.figure()
-        self.configureAxis()
-
-        # Reiniciem atributs
-        self.llistaParts = []
-        self.areaTotal = 0
 
         # Comprovem que no ens passem al desplaçar a l'esquerra
         if (self.xminTotal - n < 0):
@@ -114,28 +128,25 @@ class Skyline():
             novaAccio = (accio[0] - n, accio[1], accio[2] - n)
             novaLlistaAccions.append(novaAccio)
 
-            self.afegir(novaAccio[0], novaAccio[1], novaAccio[2])
+            newSk.afegir(novaAccio[0], novaAccio[1], novaAccio[2])
 
-        # Reiniciem els atributs
-        self.llistaAccions = novaLlistaAccions
-        self.xmaxTotal = self.xmaxTotal - n
-        self.xminTotal = self.xminTotal - n
-        return self
+        return newSk
 
     # Donat un nombre de repeticions, replica el Skyline actual n cops
     def replicar(self, n):
+        newSk = Skyline()
         # Accedirem a les accions passades per a replicar-les una a una.
         ultimesAccions = self.llistaAccions.copy()
         fi = self.xmaxTotal
-        for i in range(1, n):
+        for i in range(0, n):
             for accio in ultimesAccions:
                 # Anem calculan el Xmin, Altura i Xmax, i anem dibuixant pas a pas.
                 altura = accio[1]
                 xmin = (fi * i) + (accio[0])
                 xmax = (fi * i) + (accio[2])
-                self.afegir(xmin, altura, xmax)
+                newSk.afegir(xmin, altura, xmax)
 
-        return self
+        return newSk
 
     # Donades unes accions, ens retorna una llista amb el Skyline dividid per parts (Metode auxiliar de intersecció)
     def trobarParts(self, accions):
@@ -208,10 +219,12 @@ class Skyline():
             return None
 
     # Donat un Skyline, calcula l'intersecció entre el parametre implicit i b
-    def interseccio(self, sk):
+    def interseccio(self, other):
+
+        newSk = Skyline()
 
         # Ordenem les accions dels dos skylines
-        llistaAccionsNoves = sk.getLlistaAccions()
+        llistaAccionsNoves = other.getLlistaAccions()
         llistaAccionsNoves.sort(key=lambda x: x[0])
         self.llistaAccions.sort(key=lambda x: x[0])
 
@@ -222,12 +235,12 @@ class Skyline():
         print('Interseccio: Parts A', parts)
 
         # Borrem la fiura actual per a poder repintar la nova
-        self.figura.clf()
-        self.figura = plt.figure()
-        self.configureAxis()
+        # self.figura.clf()
+        # self.figura = plt.figure()
+        # self.configureAxis()
 
         # Especifiquem que volem pintar la interseccio de color blau
-        self.areaTotal = 0
+        newSk.areaTotal = 0
 
         # Per cada nova accio a afegir, mirarem si cap dins de cada part del skyline principal. Si cap,
         # pintarem l'intersecció
@@ -235,32 +248,39 @@ class Skyline():
             for part in parts:
                 edifici = self.capDins(accio, part)
                 if (edifici is not None):
-                    self.afegir(edifici[0], edifici[1], edifici[2])
-        return self
+                    newSk.afegir(edifici[0], edifici[1], edifici[2])
+        return newSk
 
     # Donat un Skyline, calcula l'unió entre el parametre implicit i b
-    def unio(self, sk):
-        llistaAccionsUnir = sk.getLlistaAccions()
+    def unio(self, other):
+        newSk = Skyline()
+        llistaAccionsUnir = other.getLlistaAccions()
         for accio in llistaAccionsUnir:
             # print(accio)
             # Anem calculan el Xmin, ALtura i Xmax, i anem dibuixant pas a pas.
-            self.afegir(accio[0], accio[1], accio[2])
+            newSk.afegir(accio[0], accio[1], accio[2])
+
+        for accio in self.llistaAccions:
+            # print(accio)
+            # Anem calculan el Xmin, ALtura i Xmax, i anem dibuixant pas a pas.
+            newSk.afegir(accio[0], accio[1], accio[2])
 
         # Reiniciem la llista de parts i recalculem l'area
-        self.llistaParts = self.trobarParts(self.llistaAccions)
-        self.areaTotal = 0
+        newSk.llistaParts = self.trobarParts(self.llistaAccions)
+        newSk.areaTotal = 0
 
         # Per cada part, recalculem l'area
         for part in self.llistaParts:
             base = part[2] - part[0]
             altura = part[1]
-            self.areaTotal += (base*altura)
+            newSk.areaTotal += (base * altura)
 
-        return self
+        return newSk
 
     # Calcula l'Skyline reflectit
     def mirall(self):
 
+        newSk = Skyline()
         # Ens quedem amb el inici del Skyline i posem del reves la llista de accions
         inici = self.xminTotal
 
@@ -269,15 +289,6 @@ class Skyline():
         ultimesAccions = self.llistaAccions.copy()
         ultimesAccions.sort(key=lambda x: x[0], reverse=True)
         print('Mirall: accions', ultimesAccions)
-        # Borrem la fiura actual per a poder repintar la nova
-        self.figura.clf()
-        self.figura = plt.figure()
-        self.configureAxis()
-        self.llistaAccions = []
-
-        # Reiniciem atributs
-        self.llistaParts = []
-        self.areaTotal = 0
 
         xminAnterior = ultimesAccions[0][2]
 
@@ -291,11 +302,11 @@ class Skyline():
             xmin = inici + espai
             xmax = xmin + base
             print('Mirall: Nou edifici', xmin, altura, xmax)
-            self.afegir(xmin, altura, xmax)
+            newSk.afegir(xmin, altura, xmax)
             inici = xmax
             xminAnterior = accio[0]
 
-        return self
+        return newSk
 
     # Consulta el paramtere a l'atribut llistaAccions
     def getLlistaAccions(self):
@@ -334,12 +345,19 @@ class Skyline():
 
 '''
 a = Skyline()
+b = Skyline()
 #a.afegir(1,2,2)
 #a.afegir(2,4,4)
 #a.afegir(4,2,8)
 a.afegir(1,4,3)
-a.afegir(3,8,5)
-a.afegir(5,4,9)
-a.mirall()
+
+
+b.afegir(8,6,15)
+c = a+b
+
+a.afegir(1,4,30)
+
+
 plt.show()
+
 '''

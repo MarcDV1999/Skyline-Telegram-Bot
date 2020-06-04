@@ -1,4 +1,3 @@
-# Generated from /Users/marcdomenech/Desktop/UPC/Computacio/LP/Practica Pyhton i Compiladors/cl/Skyline.g4 by ANTLR 4.8
 import random
 from skyline import Skyline
 
@@ -7,7 +6,7 @@ if __name__ is not None and "." in __name__:
     from .SkylineVisitor import SkylineVisitor
 else:
     from cl.gen.SkylineParser import SkylineParser
-    from SkylineVisitor import SkylineVisitor
+    from cl.gen.SkylineVisitor import SkylineVisitor
 
 
 # This class defines a complete generic visitor for a parse tree produced by SkylineParser.
@@ -63,31 +62,22 @@ class SkTreeVisitor(SkylineVisitor):
 
             # Si la expressió és entre 2 Skylines
             if(type(f1) is Skyline):
-                if(type(f2) is Skyline):
-                    fAux = self.duplicarSkyline(f1)
-                    if (simbol == ctx.MES()):
-                        return fAux.unio(f2)
-                    if (simbol == ctx.MULT()):
-                        return fAux.interseccio(f2)
-                elif(type(f2) is int):
-                    fAux = self.duplicarSkyline(f1)
-                    if (simbol == ctx.MULT()):
-                        return fAux.replicar(f2)
-                    if (simbol == ctx.MES()):
-                        return fAux.moureDreta(f2)
-                    if (simbol == ctx.MENYS()):
-                        return fAux.moureEsquerra(f2)
+                if (simbol == ctx.MES()):
+                    return f1 + f2
+                if (simbol == ctx.MULT()):
+                    return f1 * f2
+                if (simbol == ctx.MENYS()):
+                    return f1 - f2
 
             # Si la expressió és entre Skyline i N
             elif(type(f1) is int):
                 if(type(f2) is Skyline):
-                    fAux = self.duplicarSkyline(f2)
                     if (simbol == ctx.MULT()):
-                        return fAux.replicar(int(f1))
+                        return f2 * f1
                     if (simbol == ctx.MES()):
-                        return fAux.moureDreta(int(f1))
+                        return f2+f1
                     if (simbol == ctx.MENYS()):
-                        return fAux.moureEsquerra(int(f1))
+                        return f2-f1
                 if (type(f2) is int):
                     if (simbol == ctx.MES()):
                         return f1 + f2
@@ -108,9 +98,9 @@ class SkTreeVisitor(SkylineVisitor):
         elif(len(fills) == 2):
             simbol = fills[0]
             edifici = self.visit(fills[1])
-            if(simbol == ctx.MENYS() and type(edifici) is Skyline):
-                fAux = self.duplicarSkyline(edifici)
-                return fAux.mirall()
+
+            if(simbol == ctx.MENYS()):
+                return -edifici
 
     # Funció que visita l'AST on la seva arrel és una assignació
     def visitAssignacio(self, ctx: SkylineParser.AssignacioContext):
@@ -168,8 +158,8 @@ class SkTreeVisitor(SkylineVisitor):
             # Anem afegint al newSk els diversos edificis
             sk = self.visit(f)
             if (type(sk) is Skyline):
-                print('valor',newSk)
-                newSk.unio(sk)
+                print('valor', newSk)
+                newSk = newSk + sk
         return newSk
 
     # Funció que visita l'AST on la seva arrel és un edifici aleatori
@@ -204,19 +194,21 @@ class SkTreeVisitor(SkylineVisitor):
         self.taulaSimbols = dict
 
     # Funció que guarda el Skyline amb id id, en el arxiu id.sky
-    def saveSkyline(self, id):
+    def saveSkyline(self, id, username):
         try:
             sk = self.taulaSimbols[id]
-            sk.saveSkyline('{}{}.sky'.format(self.SkyDBRoot, id))
+            nameToSave = id+username
+            sk.saveSkyline('{}{}.sky'.format(self.SkyDBRoot, nameToSave))
             sk.mostrar(self.file)
         except Exception as _:
             print('No tinc aquest Skyline')
 
     # Funció que carrega el Skyline amb id id, del arxiu id.sky
-    def loadSkyline(self, id):
+    def loadSkyline(self, id, username):
         try:
             sk = Skyline()
-            sk = sk.getSkyline('{}{}.sky'.format(self.SkyDBRoot, id))
+            nameToLoad = id+username
+            sk = sk.getSkyline('{}{}.sky'.format(self.SkyDBRoot, nameToLoad))
             self.taulaSimbols[id] = sk
             sk.mostrar(self.file)
             return sk
@@ -226,10 +218,10 @@ class SkTreeVisitor(SkylineVisitor):
             return None
 
     # Funció que donat un Skyline, en retorna un copia
-    def duplicarSkyline(self, sk):
-        sk.saveSkyline('{}SkylineActual.pickle'.format(self.auxiliarsRoot))
-        sk = sk.getSkyline('{}SkylineActual.pickle'.format(self.auxiliarsRoot))
-        return sk
+    # def duplicarSkyline(self, sk):
+    #    sk.saveSkyline('{}SkylineActual.pickle'.format(self.auxiliarsRoot))
+    #   sk = sk.getSkyline('{}SkylineActual.pickle'.format(self.auxiliarsRoot))
+    #    return sk
 
 
 del SkylineParser

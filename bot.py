@@ -26,15 +26,14 @@ class Bot():
         # Enllaça un missatge normal de text amb la funció interpret
         dispatcher.add_handler(MessageHandler(filters=Filters.text, callback=self.interpret))
 
-        # Creem el objecte Interpret
-        self.antlr = Interpret()
-
         # Engega el bot
         self.updater.start_polling()
 
     # Defineix una funció que saluda i que s'executarà quan el bot rebi el missatge /start
     # update i context contenen informació interessant del bot
     def start(self, update, context):
+        # Creem el objecte Interpret
+        context.user_data['antlr'] = Interpret()
         nom = update.message.from_user.first_name
         nomBot = 'Bob l\'Arquitecte'
         text = '''
@@ -56,7 +55,7 @@ Pots escriure les següents *comandes* per a obtenir *més informació* 🤙🏻
 -> */save id*: Guarda un Skyline per a que puguis fer-lo servir quan vulguis.
 
 -> */load id*: Carrega un skyline que tenies guardat.
-        '''.format(nom,nomBot)
+        '''.format(nom, nomBot)
 
         context.bot.send_message(chat_id=update.effective_chat.id, parse_mode='Markdown', text=text)
 
@@ -142,25 +141,35 @@ Pots posar-te en contacte amb ell via mail a:
 
     # Defineix la funció que guarda un Skyline en un fitxer .sky
     def save_id(self, update, context):
-        id = str(context.args[0])
-
-        # Si tenim l'ID en la taula de simbols, el guardarem, sino mostrarem un missatge d'error
-        if (id in self.antlr.getTaulaSimbols()):
-            self.antlr.saveSkyline(id)
-            text = 'He guardat l\'edifici ' + id
+        print(len(context.args))
+        if (len(context.args) == 0):
+            text = 'T\'has deixat dir-me quin Skyline vols que et guardi'
+            context.bot.send_message(chat_id=update.effective_chat.id, parse_mode='Markdown', text=text)
         else:
-            text = 'No tinc cap edifici que es digui ' + id
-            print(text)
-        context.bot.send_message(chat_id=update.effective_chat.id, parse_mode='Markdown', text=text)
+            id = str(context.args[0])
+            username = str(update.message.from_user.id)
+
+            # Si tenim l'ID en la taula de simbols, el guardarem, sino mostrarem un missatge d'error
+            if (id in context.user_data['antlr'].getTaulaSimbols()):
+                print('Tens el Sk: ', id)
+                context.user_data['antlr'].saveSkyline(id, username)
+                print('Guardat: ', id)
+
+                text = 'He guardat l\'edifici ' + id
+            else:
+                text = 'No tinc cap edifici que es digui ' + id
+                print(text)
+            context.bot.send_message(chat_id=update.effective_chat.id, parse_mode='Markdown', text=text)
 
     # Defineix la funció que carrega un Skyline d'un fitxer .sky
     def load_id(self, update, context):
         try:
             # Extraiem el ID i carreguem el Skyline
             id = str(context.args[0])
-            newSk = self.antlr.loadSkyline(id)
+            username = str(update.message.from_user.id)
+            newSk = context.user_data['antlr'].loadSkyline(id, username)
 
-            #Extreiem l'area i l'altura
+            # Extreiem l'area i l'altura
             area = str(newSk.getArea())
             alçada = str(newSk.getAltura())
 
@@ -180,13 +189,14 @@ Pots posar-te en contacte amb ell via mail a:
             # Provem d'extreure el resultat de executar l'instrucció
             # Si ens retorna dos valors, es que el resultat ha estat
             # un Skyline
-            area, altura = self.antlr.executarInstruccio(input)
+            area, altura = context.user_data['antlr'].executarInstruccio(input)
+
             context.bot.send_photo(chat_id=update.effective_chat.id, photo=open(self.file, 'rb'))
             context.bot.send_message(chat_id=update.effective_chat.id, text='Area: {}\nalçada: {}'.format(str(area), str(altura)))
         # En aquest cas el resultat no ha estat un Skyline, pot ser un
         # nombre o que l'expressió no era vàlida
         except Exception as _:
-            result = self.antlr.executarInstruccio(input)
+            result = context.user_data['antlr'].executarInstruccio(input)
             if result is None:
                 text = 'No entenc el que em vols dir. Intenta-ho un altre cop'
                 print(text)
