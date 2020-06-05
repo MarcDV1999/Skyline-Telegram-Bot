@@ -71,27 +71,30 @@ class Skyline():
         fi = max(xmax, xmin)
         base = fi-inici
         ini = (inici, 0)
-        # Dibuixem el nou edifici
-        self.ax.add_patch(
-            patches.Rectangle(ini, base, altura, color=self.color))
 
-        # Actualitzem Xmax, Altura, Xmin i Area totals del Skyline
-        self.xmaxTotal = max(self.xmaxTotal, fi)
-        self.alturaTotal = max(self.alturaTotal, altura)
-        self.areaTotal += (base * altura)
-        if self.xminTotal != -1:
-            self.xminTotal = min(self.xminTotal, inici)
-        else:
-            self.xminTotal = inici
+        # Només fem modificacions si xmin es diferent a xmax
+        if (xmin != xmax):
+            # Dibuixem el nou edifici
+            self.ax.add_patch(
+                patches.Rectangle(ini, base, altura, color=self.color))
 
-        # Especifiquem els limits del eixos
-        self.ax.set_ylim(0, self.alturaTotal + 1)
-        self.ax.set_xlim(0, self.xmaxTotal + 1)
+            # Actualitzem Xmax, Altura, Xmin i Area totals del Skyline
+            self.xmaxTotal = max(self.xmaxTotal, fi)
+            self.alturaTotal = max(self.alturaTotal, altura)
+            self.areaTotal += (base * altura)
+            if self.xminTotal != -1:
+                self.xminTotal = min(self.xminTotal, inici)
+            else:
+                self.xminTotal = inici
 
-        # Afegim al llistat d'accions el que acabem de fer
-        self.llistaAccions.append((inici, altura, fi))
+            # Especifiquem els limits del eixos
+            self.ax.set_ylim(0, self.alturaTotal + 1)
+            self.ax.set_xlim(0, self.xmaxTotal + 1)
 
-        # Retornem l'altura i area toral del Skyline
+            # Afegim al llistat d'accions el que acabem de fer
+            self.llistaAccions.append((inici, altura, fi))
+
+        # Retornem el Skyline
         return self
 
     # Donat un nombre n, desplacem l'Skyline n posicions a la dreta
