@@ -162,6 +162,10 @@ a := [(1,2,3),(3,2,5),(5,5,10)]
 
 ![1-llistaAccions](ImatgesDocument/llistaAccions.jpg)
 
+
+
+
+
 - **self.llistaAccions**: Llista en la que guardem el llistat de accions que han fet possible generar el Skyline. En el Skyline de la figura tindriem:
 
   ```
