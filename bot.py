@@ -1,4 +1,4 @@
-# importa l'API de Telegram
+# importem l'API de Telegram i Interpret
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from interpret import Interpret
 
@@ -7,15 +7,17 @@ class Bot():
 
     # Constructor
     def __init__(self):
-        # declara una constant amb el access token que llegeix de token.txt
+        # Declara una constant amb el access token que llegeix de token.txt
         TOKEN = open('token.txt').read().strip()
+
+        # Imatge que anirà enviant el Bot amb el Skyline del moment
         self.file = 'Imatges/FigActual.png'
 
-        # crea objectes per treballar amb Telegram
+        # Crea objectes per treballar amb Telegram
         self.updater = Updater(token=TOKEN, use_context=True)
         dispatcher = self.updater.dispatcher
 
-        # Enllaça les comandes amb les funcions
+        # Enllaça les comandes amb els metodes
         dispatcher.add_handler(CommandHandler('start', self.start))
         dispatcher.add_handler(CommandHandler('help', self.help))
         dispatcher.add_handler(CommandHandler('author', self.author))
@@ -23,17 +25,20 @@ class Bot():
         dispatcher.add_handler(CommandHandler('clean', self.clean))
         dispatcher.add_handler(CommandHandler('save', self.save_id))
         dispatcher.add_handler(CommandHandler('load', self.load_id))
+
         # Enllaça un missatge normal de text amb la funció interpret
         dispatcher.add_handler(MessageHandler(filters=Filters.text, callback=self.interpret))
 
         # Engega el bot
         self.updater.start_polling()
 
-    # Defineix una funció que saluda i que s'executarà quan el bot rebi el missatge /start
+    # Metode que es linkarà amb la comanda /start. S'inicia el bot  i mostrem
+    # totes les possibles comandes que podem demanra-li
     # update i context contenen informació interessant del bot
     def start(self, update, context):
-        # Creem el objecte Interpret
+        # Cada usuari tindrà un interpre amb la seva taula de Skylines
         context.user_data['antlr'] = Interpret()
+
         nom = update.message.from_user.first_name
         nomBot = 'Bob l\'Arquitecte'
         text = '''
@@ -59,7 +64,9 @@ Pots escriure les següents *comandes* per a obtenir *més informació* 🤙🏻
 
         context.bot.send_message(chat_id=update.effective_chat.id, parse_mode='Markdown', text=text)
 
-    # Defineix la funció que dona informació sobre les operacions.
+    # Metode que es linkarà amb la comanda /help.
+    # Es dona tota l'informació de com crear Skylines i explica totes les
+    # operacions que es poden aplicar sobre ells
     def help(self, update, context):
         text = '''
     🤖 *Aquestes són totes les coses que puc fer*:
@@ -104,7 +111,8 @@ A més puc operar amb aquest edifici i crear tants Skylines com jo vulgui:
             '''
         context.bot.send_message(chat_id=update.effective_chat.id, parse_mode='Markdown', text=text)
 
-    # Defineix una funció que mostra l'autor del Bot (Comanda /author)
+    # Metode que es linkarà amb la comanda /author.
+    # Dona l'informació de qui ha estat el seu author
     def author(self, update, context):
         text = '''
 El meu autor és en *Marc Domènech* 🙃
@@ -114,10 +122,11 @@ Pots posar-te en contacte amb ell via mail a:
 `marc.domenech.vila@est.fib.upc.edu`'''
         context.bot.send_message(chat_id=update.effective_chat.id, parse_mode='Markdown', text=text)
 
-    # Defineix la funció que mostra el llistat de variables
+    # Metode que es linkarà amb la comanda /lst.
+    # Mostra al usuari el llistat de variables que te fins al moment
     def lst(self, update, context):
-        # Descarreguem la taula de simbols
-        taula = self.antlr.getTaulaSimbols()
+        # Descarreguem la taula de simbols del usuari
+        taula = context.user_data['antlr'].getTaulaSimbols()
         text = 'Aqui tens els Skylines que tens guardats:\n\n'
 
         # Si la taula no està buida, extreiem els simbols
@@ -133,77 +142,90 @@ Pots posar-te en contacte amb ell via mail a:
             '''
         context.bot.send_message(chat_id=update.effective_chat.id, parse_mode='Markdown', text=text)
 
-    # Defineix la funció que Reseteja el llistat de variables
+    # Metode que es linkarà amb la comanda /clean.
     def clean(self, update, context):
-        self.antlr.setTaulaSimbols({})
-        text = 'Esborro tots els Skylines que tenies guardats\n\n'
+        # Carreguem al usuari una taula de simbols buida
+        context.user_data['antlr'].setTaulaSimbols({})
+        text = 'Acabo de esborrar totes els Skylines que tenies guardats\n\n'
         context.bot.send_message(chat_id=update.effective_chat.id, parse_mode='Markdown', text=text)
 
-    # Defineix la funció que guarda un Skyline en un fitxer .sky
+    # Metode que es linkarà amb la comanda /save.
+    # Guarda el Skyline que es passa per parametre per a que pugui ser
+    # accessible desde l'usuari en qualsevol moment en format .sky
     def save_id(self, update, context):
-        print(len(context.args))
+        # Si l'usuari no ha introduit el ID del Skyline a guardar...
         if (len(context.args) == 0):
             text = 'T\'has deixat dir-me quin Skyline vols que et guardi'
             context.bot.send_message(chat_id=update.effective_chat.id, parse_mode='Markdown', text=text)
         else:
+            # Extraiem el ID del Skyline i el ID del usuari
             id = str(context.args[0])
             username = str(update.message.from_user.id)
 
             # Si tenim l'ID en la taula de simbols, el guardarem, sino mostrarem un missatge d'error
             if (id in context.user_data['antlr'].getTaulaSimbols()):
-                print('Tens el Sk: ', id)
                 context.user_data['antlr'].saveSkyline(id, username)
-                print('Guardat: ', id)
-
                 text = 'He guardat l\'edifici ' + id
             else:
                 text = 'No tinc cap edifici que es digui ' + id
-                print(text)
             context.bot.send_message(chat_id=update.effective_chat.id, parse_mode='Markdown', text=text)
 
-    # Defineix la funció que carrega un Skyline d'un fitxer .sky
+    # Metode que es linkarà amb la comanda /load.
+    # Descarrega el Skyline que te guardat el usuari en format .sky
     def load_id(self, update, context):
-        try:
-            # Extraiem el ID i carreguem el Skyline
+        # Si l'usuari no ha introduit el ID del Skyline a guardar...
+        if (len(context.args) == 0):
+            text = 'T\'has deixat dir-me quin Skyline vols que et guardi'
+            context.bot.send_message(chat_id=update.effective_chat.id, parse_mode='Markdown', text=text)
+        else:
+            # Extraiem el ID i descarreguem el Skyline
             id = str(context.args[0])
             username = str(update.message.from_user.id)
-            newSk = context.user_data['antlr'].loadSkyline(id, username)
+            # Intentem descarregar el Skyline que ens demana
+            try:
+                # Descarreguem el Skyline demanat
+                newSk = context.user_data['antlr'].loadSkyline(id, username)
 
-            # Extreiem l'area i l'altura
-            area = str(newSk.getArea())
-            alçada = str(newSk.getAltura())
+                # Extreiem l'area i l'altura
+                area = str(newSk.getArea())
+                alçada = str(newSk.getAltura())
 
-            context.bot.send_message(chat_id=update.effective_chat.id, text='Area: {}\nalçada: {}'.format(area, alçada))
-            context.bot.send_photo(chat_id=update.effective_chat.id, photo=open(self.file, 'rb'))
-        # Si no podem mostrarem un missatge d'error
-        except Exception as _:
-            text = 'No tinc l\'imatge de ' + context.args[0]
-            print(text)
-            context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+                text = 'Area: {}\nalçada: {}'.format(area, alçada)
+                context.bot.send_photo(chat_id=update.effective_chat.id, photo=open(self.file, 'rb'))
+                context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+            # No s'ha pogut trobar el arxiu
+            except Exception as _:
+                text = 'No tinc cap edifici que es digui \'' + id + '\''
+                context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
-    # Defineix la funció que interpreta les operacions que va escribint el usuari per teclat
+    # Metode que es linkarà cada cop que l'usuari envii un missatge de text.
+    # Rep un missatge, el processa, i retorna la l'operació que s'especificava en
+    # el missatge
     def interpret(self, update, context):
         input = update.message.text
-        print('Instruccio', input)
-        try:
-            # Provem d'extreure el resultat de executar l'instrucció
-            # Si ens retorna dos valors, es que el resultat ha estat
-            # un Skyline
-            area, altura = context.user_data['antlr'].executarInstruccio(input)
-
+        #print('Instruccio', input)
+        # Provem d'extreure el resultat de executar l'instrucció
+        # Si ens retorna dos valors, es que el resultat ha estat
+        # un Skyline
+        info = context.user_data['antlr'].executarInstruccio(input)
+        print('Info: ', info)
+        # Si info es una tupla, es que tenim un Skyline per tant, area i altura
+        if (type(info) is tuple and info[0] is not None):
             context.bot.send_photo(chat_id=update.effective_chat.id, photo=open(self.file, 'rb'))
-            context.bot.send_message(chat_id=update.effective_chat.id, text='Area: {}\nalçada: {}'.format(str(area), str(altura)))
-        # En aquest cas el resultat no ha estat un Skyline, pot ser un
-        # nombre o que l'expressió no era vàlida
-        except Exception as _:
-            result = context.user_data['antlr'].executarInstruccio(input)
-            if result is None:
-                text = 'No entenc el que em vols dir. Intenta-ho un altre cop'
-                print(text)
-            else:
-                text = result
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=text)
+            context.bot.send_message(chat_id=update.effective_chat.id, text='Area: {}\nAlçada: {}'.format(str(info[0]), str(info[1])))
+
+        elif (type(info) is tuple):
+            context.bot.send_message(chat_id=update.effective_chat.id, text=info[1])
+
+        # Si info es None, es que hi ha hagut algun error al tractar l'instrucció
+        elif (info is None):
+            text = 'No entenc el que em vols dir. Intenta-ho un altre cop'
+
+        # Si info es qualsevol altra tipus de dades, simplement imprimirem el resultat.
+        else:
+            text = info
+
+        context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
 
 bot = Bot()

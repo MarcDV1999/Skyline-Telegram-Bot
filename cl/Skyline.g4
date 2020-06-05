@@ -20,7 +20,7 @@ consulta : WORD;
 assignacio : WORD ASSIGN expr;
 
 // Definim la semantica que tindra un edifici
-edifici :  '(' expr ',' expr ',' expr ')';
+edifici :  '(' expr ',' expr ',' expr ')' | consulta;
 
 // Definim la semantica que tindra un edifici
 edificis : INICIL edifici (SEP edifici)* FIL;
@@ -38,11 +38,7 @@ expr :  '(' expr ')' // Mes prioritat
     | expr MULT expr
     | expr DIV expr
     | expr (MES | MENYS) expr
-    //| <assoc=right> expr POT expr // La potencia te associativitat per la dreta (cal especificar-ho)
-    | consulta
     | edifici
-    | edificis
-    | edificiAleatori
     | NUM;
 
 
@@ -55,7 +51,6 @@ MES : '+' ;
 MENYS : '-';
 MULT : '*';
 DIV : '/';
-POT : '^';
 WS : [ \n]+ -> skip ; // indica a l'escàner que el token WS no ha d'arribar al parser.
 WORD : ('a'..'z' | 'A'..'Z')+;
 ASSIGN : ':=';

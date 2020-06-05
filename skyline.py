@@ -6,12 +6,12 @@ import pickle
 
 class Skyline():
 
-    # Per a que no saltin Warnongs dels threads
-    # plt.switch_backend('Agg')
+    # Deixem de mostrar les figures per pantalla, només volem guardar-les en una imatge
+    plt.switch_backend('Agg')
 
     # Constructor
     def __init__(self):
-        # Atributs relacionats amb wl matplotlib per a poder dibuixar els rectangles
+        # Atributs relacionats amb el matplotlib per a poder dibuixar els rectangles
         self.figura = plt.figure()
         self.configureAxis()
 
@@ -29,11 +29,11 @@ class Skyline():
     # Redefinim el operador de suma
     def __add__(self, other):
         tipus = type(other)
-        print('Suma, tipus', tipus)
+        # print('Suma, tipus', tipus)
         if(tipus is Skyline):
             return self.unio(other)
         elif(tipus is int):
-            print('Suma Skyline + Int')
+            # print('Suma Skyline + Int')
             return self.moureDreta(other)
         else:
             return None
@@ -71,7 +71,6 @@ class Skyline():
         fi = max(xmax, xmin)
         base = fi-inici
         ini = (inici, 0)
-
         # Dibuixem el nou edifici
         self.ax.add_patch(
             patches.Rectangle(ini, base, altura, color=self.color))
@@ -106,7 +105,7 @@ class Skyline():
         for accio in ultimesAccions:
             novaAccio = (accio[0] + n, accio[1], accio[2] + n)
             novaLlistaAccions.append(novaAccio)
-
+            # Anem afegint les accions
             newSk.afegir(novaAccio[0], novaAccio[1], novaAccio[2])
 
         return newSk
@@ -160,7 +159,7 @@ class Skyline():
         part = []
 
         # Per cada acció, mirarem si forma part de la part anterior o no.
-        # D'aquesta manera anirem construint les diverses parts del Skyline
+        # D'aquesta manera anirem reconstruint les diverses parts del Skyline
         for accio in accions:
             if (primer):
                 xminT = accio[0]
@@ -214,7 +213,7 @@ class Skyline():
             else:
                 print('CapDins tros:', accio, part, part[0], min(part[1], accio[1]), part[2])
                 return (max(part[0], accio[0]), min(part[1], accio[1]), part[2])
-        # Sino, no cap el edifici
+        # Sino, no cap el edifici en la part especificada
         else:
             return None
 
@@ -223,24 +222,16 @@ class Skyline():
 
         newSk = Skyline()
 
-        # Ordenem les accions dels dos skylines
+        # Ordenem les accions dels dos skylines per xmin
         llistaAccionsNoves = other.getLlistaAccions()
         llistaAccionsNoves.sort(key=lambda x: x[0])
         self.llistaAccions.sort(key=lambda x: x[0])
 
         # Dividim el Skyline principal en parts (per a que sigui mes facil)
-        print('Interseccio: Accions B', llistaAccionsNoves)
+        # print('Interseccio: Accions B', llistaAccionsNoves)
         parts = self.trobarParts(self.llistaAccions)
         part2 = self.trobarParts(llistaAccionsNoves)
-        print('Interseccio: Parts A', parts)
-
-        # Borrem la fiura actual per a poder repintar la nova
-        # self.figura.clf()
-        # self.figura = plt.figure()
-        # self.configureAxis()
-
-        # Especifiquem que volem pintar la interseccio de color blau
-        newSk.areaTotal = 0
+        # print('Interseccio: Parts A', parts)
 
         # Per cada nova accio a afegir, mirarem si cap dins de cada part del skyline principal. Si cap,
         # pintarem l'intersecció

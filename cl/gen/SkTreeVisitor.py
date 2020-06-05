@@ -23,7 +23,6 @@ class SkTreeVisitor(SkylineVisitor):
         # Agafem el següent fill i el visitem.
         fill = next(ctx.getChildren())
         result = self.visit(fill)
-
         # En cas de ser un Skyline retornem la seva area i altura
         if (type(result) is Skyline):
             result.mostrar(self.file)
@@ -36,7 +35,6 @@ class SkTreeVisitor(SkylineVisitor):
     def visitExpr(self, ctx: SkylineParser.ExprContext):
         # Agafem tots els fills i mirem si hem arribat a una fulla o no
         fills = [n for n in ctx.getChildren()]
-
         # Si només tenim un fill, hem arribat a un NUM o una consulta
         if (len(fills) == 1):
             # Si es un num...
@@ -64,9 +62,9 @@ class SkTreeVisitor(SkylineVisitor):
             if(type(f1) is Skyline):
                 if (simbol == ctx.MES()):
                     return f1 + f2
-                if (simbol == ctx.MULT()):
+                elif (simbol == ctx.MULT()):
                     return f1 * f2
-                if (simbol == ctx.MENYS()):
+                elif (simbol == ctx.MENYS()):
                     return f1 - f2
 
             # Si la expressió és entre Skyline i N
@@ -74,24 +72,22 @@ class SkTreeVisitor(SkylineVisitor):
                 if(type(f2) is Skyline):
                     if (simbol == ctx.MULT()):
                         return f2 * f1
-                    if (simbol == ctx.MES()):
+                    elif (simbol == ctx.MES()):
                         return f2+f1
-                    if (simbol == ctx.MENYS()):
+                    elif (simbol == ctx.MENYS()):
                         return f2-f1
-                if (type(f2) is int):
+                elif (type(f2) is int):
                     if (simbol == ctx.MES()):
                         return f1 + f2
-                    if (simbol == ctx.MENYS()):
+                    elif (simbol == ctx.MENYS()):
                         return f1 - f2
-                    if (simbol == ctx.MULT()):
+                    elif (simbol == ctx.MULT()):
                         return f1 * f2
-                    if (simbol == ctx.DIV()):
+                    elif (simbol == ctx.DIV()):
                         try:
                             return f1 / f2
                         except Exception as _:
                             print('Error, divisió per zero')
-                    if (simbol == ctx.POT()):
-                        return f1 ** f2
 
         # Sino, vol dir que estem en una expressió, formada per un simbol i un parametre.
         # És el cas del mirall
@@ -117,7 +113,7 @@ class SkTreeVisitor(SkylineVisitor):
 
         except Exception as _:
             print('Assignacio Error: Estem assignant el num', valor, 'a la variable', variable)
-            return None
+            return (None, 'Només pots guardar Skylines dins de les variables')
 
     # Funció que visita l'AST on la seva arrel és una consulta
     def visitConsulta(self, ctx: SkylineParser.ConsultaContext):
@@ -130,22 +126,30 @@ class SkTreeVisitor(SkylineVisitor):
             return self.taulaSimbols[variable]
         else:
             print('Consulta: La variable {}, no la tinc'.format(variable))
-            return None
+            return (None, 'No he trobat el Skyline {}'.format(variable))
 
     # Funció que visita l'AST on la seva arrel és una edifici
     def visitEdifici(self, ctx: SkylineParser.EdificiContext):
         # Agafem els seus fills i ens quedem amb xmin, altura, xmax
         fills = [n for n in ctx.getChildren()]
 
-        xmin = self.visit(fills[1])
-        altura = self.visit(fills[3])
-        xmax = self.visit(fills[5])
+        # Si només rebem un fill es que el edifici està dins una variable
+        if (len(fills) == 1):
+            fill = self.visit(fills[0])
+            return fill
+        # Sinó, vol dir que estem rebent un edifici de la forma (xmin,altura,xmax)
+        elif (len(fills) == 7):
+            xmin = self.visit(fills[1])
+            altura = self.visit(fills[3])
+            xmax = self.visit(fills[5])
 
-        # Creem un nou Skyline i el retornem amb les dades corresponents
-        newSk = Skyline()
-        newSk.afegir(xmin, altura, xmax)
+            # Creem un nou Skyline i el retornem amb les dades corresponents
+            newSk = Skyline()
+            newSk.afegir(xmin, altura, xmax)
 
-        return newSk
+            return newSk
+        else:
+            return (None, 'L\'edifici no està ben definit')
 
     # Funció que visita l'AST on la seva arrel és un conjunt d'edificis
     def visitEdificis(self, ctx: SkylineParser.EdificisContext):
@@ -157,9 +161,11 @@ class SkTreeVisitor(SkylineVisitor):
         for f in fills:
             # Anem afegint al newSk els diversos edificis
             sk = self.visit(f)
+
             if (type(sk) is Skyline):
-                print('valor', newSk)
                 newSk = newSk + sk
+            elif (sk is None):
+                return (None, 'No pots escriure expressions aritmètiques per a definir un edifici compost')
         return newSk
 
     # Funció que visita l'AST on la seva arrel és un edifici aleatori
@@ -215,13 +221,7 @@ class SkTreeVisitor(SkylineVisitor):
 
         except Exception as _:
             print('No tinc aquest Skyline guardat')
-            return None
-
-    # Funció que donat un Skyline, en retorna un copia
-    # def duplicarSkyline(self, sk):
-    #    sk.saveSkyline('{}SkylineActual.pickle'.format(self.auxiliarsRoot))
-    #   sk = sk.getSkyline('{}SkylineActual.pickle'.format(self.auxiliarsRoot))
-    #    return sk
+            return (None, 'No tinc aquest Skyline guardat')
 
 
 del SkylineParser

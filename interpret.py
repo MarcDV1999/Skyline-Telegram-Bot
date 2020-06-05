@@ -13,14 +13,12 @@ class Interpret():
         token_stream = CommonTokenStream(lexer)
 
         parser = SkParser.SkylineParser(token_stream)
-        tree = parser.root()
 
         # A tree tenim el arbre parsejat
-        # print('Tree',tree.toStringTree(recog=parser))
+        tree = parser.root()
 
         # Creem un visitor, per a poder recorrer el arbre generat anteriorment
         result = self.visitor.visit(tree)
-        # print(result)
         return result
 
     def getTaulaSimbols(self):

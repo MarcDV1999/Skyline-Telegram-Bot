@@ -138,19 +138,17 @@ En aquest projecte intervenen principalment 3 Classes importants:
 
 ### Skyline.py
 
-Aquesta és la classe que s'encarrega de gestionar els Skylines. Hi trobem mètodes per operar amb ells a més de poder-los guardar en imatges i en format .sky.
+Aquesta és la classe que s'encarrega de gestionar els Skylines. Hi trobem mètodes per operar amb ells a més de poder-los guardar en imatges i en format .sky. 
 
-### Interpret.py
+#### Implementació
 
-Aquesta és la classe que s'encarrega de analitzar sintàcticament les expressions escrites per l'usuari en el xat de telegram. Un cop fet l'anàlisis, fa ús de la classe Skyline per calcular el Skyline corresponent.
+Respecte l'implementació, he optat per a implementar un metode per cada operador. Aquests mètodes apliquen l'operació agafants els Skylines del parametre implicit i del paràmetre explícit.
 
-### Bot.py
+Un cop implementats els mètodes he optat per sobrecarregar els operadors de la classe (+, *, -, ...).
 
-Aquesta és la classe que implementa el Bot. En aquesta classe es defineixen les funcions Handler que enllaçant amb les comandes del Bot. Aquesta classe fa ús de la classe interpret.py per a poder tractar amb la gramàtica i els Skylines.
+##### Atributs interessants
 
-#### Atributs interessants
-
-En aquest apartat comentaré breument, certs atributs interessants per a poder entendre el funcionament del bot. Prendrem com exemple aquest Skyline:
+En aquest apartat comentaré breument, certs atributs interessants de la classe Skyline per a poder entendre el funcionament del bot. Prendrem com exemple aquest Skyline:
 
 ```
 a := [(1,2,3),(3,2,5),(5,5,10)]
@@ -176,13 +174,30 @@ a := [(1,2,3),(3,2,5),(5,5,10)]
 
   Veiem com en aquest cas les accions _(1,2,3)_ i _(3,2,5)_ és poden unificar en una sola part.
 
-  
+
+
+
+### Interpret.py
+
+Aquesta és la classe que s'encarrega de analitzar sintàcticament les expressions escrites per l'usuari en el xat de telegram. Un cop fet l'anàlisis, fa ús de la classe Skyline per calcular el Skyline corresponent.
+
+Conté un mètode per executar una instrucció i diversos mètodes per a comunicar el Bot de telegram amb els Skylines del usuari.
+
+
+
+### Bot.py
+
+Aquesta és la classe que implementa el Bot. En aquesta classe es defineixen les funcions Handler que enllaçant amb les comandes del Bot. Aquesta classe fa ús de la classe interpret.py per a poder tractar amb la gramàtica i els Skylines.
+
+S'emmagatzema per cada usuari el llistat dels seus Skylines de manera que es manté la privacitat de les dades en aquest sentit.
+
+
 
 ## Algorismes interessants
 
 ### Calcular les parts d'un edifici
 
-De cara a implementar les operacions de unió i intersecció, m'ha semblat interessant que cada Skyline tingues un atribut "_llistaParts_". Per a poder calcular aquesta llista només ha calgut, recorrer la llista d'accions ordenada i sintetitzar al maxim les accions, formant parts.
+De cara a implementar les operacions de unió i intersecció, m'ha semblat interessant que cada Skyline tingues un atribut "_llistaParts_". Per a poder calcular aquesta llista només ha calgut, recorrer la llista d'accions ordenada i compactar al maxim les accions, formant parts.
 
 
 
