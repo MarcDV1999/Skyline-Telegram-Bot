@@ -6,7 +6,9 @@ Pràctica de Python de l'assignatura de Llenguatges de Programació de la Facult
 
 ## Instal·lació i execució
 
-### Requirements.txt
+
+
+### Requirements.txt
 
 En aquest fitxer, és troben totes les llibreries necessàries per a poder executar el bot. Per a instalar totes les llibreries del fitxer només cal executar la següent instrucció en el terminal.
 
@@ -19,6 +21,8 @@ Com executar el programa
 ```
 python3 bot.py
 ```
+
+
 
 
 
@@ -146,7 +150,7 @@ Respecte a la implementació, he optat per a implementar un mètode per cada ope
 
 Un cop implementats els mètodes he optat per sobrecarregar els operadors de la classe (+, *, -, ...).
 
-##### Atributs interessants
+#### Atributs interessants
 
 En aquest apartat comentaré breument, certs atributs interessants de la classe Skyline per a poder entendre el funcionament del bot. Prendrem com exemple aquest Skyline:
 
@@ -156,7 +160,7 @@ a := [(1,2,3),(3,2,5),(5,5,10)]
 
 
 
-![1-llistaAccions](/Users/marcdomenech/Desktop/UPC/Computacio/LP/Skyline Telegram Bot/ImatgesDocument/llistaAccions.jpg)
+![1-llistaAccions](ImatgesDocument/llistaAccions.jpg)
 
 - **self.llistaAccions**: Llista en la que guardem el llistat de accions que han fet possible generar el Skyline. En el Skyline de la figura tindriem:
 
