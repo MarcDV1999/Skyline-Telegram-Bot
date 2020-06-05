@@ -122,7 +122,6 @@ class SkTreeVisitor(SkylineVisitor):
         if variable in self.taulaSimbols:
             return self.taulaSimbols[variable]
         else:
-            print('Consulta: La variable {}, no la tinc'.format(variable))
             return (None, 'No he trobat el Skyline {}'.format(variable))
 
     # Funció que visita l'AST on la seva arrel és una edifici
@@ -158,7 +157,6 @@ class SkTreeVisitor(SkylineVisitor):
         for f in fills:
             # Anem afegint al newSk els diversos edificis
             sk = self.visit(f)
-            print(sk,f)
             if (type(sk) is Skyline):
                 newSk = newSk + sk
         return newSk

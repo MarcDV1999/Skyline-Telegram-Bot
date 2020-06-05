@@ -46,7 +46,7 @@ L'usuari te dues opcions per a interactuar amb el bot.
 
 - **/save _id_**: Guarda un Skyline per a que puguis fer-lo servir quan vulguis.
 
-- **/load _id_**: Carrega un skyline que tenies guardat.
+- **/load _id_**: Carrega un Skyline que tinguis guardat.
 
   
 
@@ -94,7 +94,7 @@ L'usuari te dues opcions per a interactuar amb el bot.
 
 - **Intersecció**:
 
-  Uneix dos Skylines, quedant-se només mab les parts comunes dels dos.
+  Uneix dos Skylines, quedant-se només amb les parts comunes dels dos.
 
   ```
   a := (1,2,3) * (2,4,6)
@@ -105,7 +105,7 @@ L'usuari te dues opcions per a interactuar amb el bot.
   Replica `n`cops el Skyline
 
   ```
-  a := (1,2,3) * 2
+  a := (1,2,3) * 5
   ```
 
 - **Desplaçar a la dreta**:
@@ -118,7 +118,7 @@ L'usuari te dues opcions per a interactuar amb el bot.
 
 - **Desplaçar a l'esquerra**:
 
-  Desplaça cap a l'esquerra `n`posicions. El Skyline mai començarà en posicions negatives.
+  Desplaça cap a l'esquerra `n`posicions. Els Skylines mai començaran en posicions negatives.
 
   ```
   a := (1,2,3) - 2
@@ -174,7 +174,7 @@ a := [(1,2,3),(3,2,5),(5,5,10)]
 
   
 
-- **self.llistaParts**: Si agafem el mateix Skyline de adalt, el llistat de parts seria un llista amb les accions sintetitzades. En aquest cas la llista de parts quedaria de la següent forma:
+- **self.llistaParts**: Si agafem el mateix Skyline de adalt, el llistat de parts seria un llista amb les accions compactades. En aquest cas la llista de parts quedaria de la següent forma:
 
   ```
   self.llistaParts = [(1,2,5),(5,5,10)]
@@ -187,7 +187,7 @@ a := [(1,2,3),(3,2,5),(5,5,10)]
 
 ### Interpret.py
 
-Aquesta és la classe que s'encarrega de analitzar sintàcticament les expressions escrites per l'usuari en el xat de telegram. Un cop fet l'anàlisis, fa ús de la classe Skyline per calcular el Skyline corresponent.
+Aquesta és la classe que s'encarrega d'analitzar sintàcticament les expressions escrites per l'usuari en el xat de telegram. Un cop fet l'anàlisis, fa ús de la classe Skyline per calcular el Skyline corresponent.
 
 Conté un mètode per executar una instrucció i diversos mètodes per a comunicar el Bot de Telegram amb els Skylines del usuari.
 
@@ -225,5 +225,5 @@ This project is licensed under the MIT License - see the [LICENSE.md](https://gi
 
 ## Agraïments
 
-- Gràcies al meu germà per dedicar-se a testejar que el bot funciona correctament.
+- Gràcies al meu germà per dedicar-se a testejar que el bot funcioni correctament.
 

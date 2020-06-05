@@ -79,33 +79,33 @@ Pots escriure les següents *comandes* per a obtenir *més informació* 🤙🏻
 
     *[Fi]:* Posicio on acaba l\'edifici
 
-        -> `Exemple: (1,2,3)`
+        -> `a := (1,2,3)`
 
 En aquest cas estariem creant un edifici que comença en `x = 1`, acaba en `x = 3` i té una alçada de `2`. _(Inici,Alçada,Fi)_
 
 
 A més puc operar amb aquest edifici i crear tants Skylines com jo vulgui:
 
-*Crear Skyline Simple:* Puc crear Skyline amb un edifici que tu em diguis -> `Exemple: (6,7,8)`
+*Crear Skyline Simple:* Puc crear Skyline amb un edifici que tu em diguis -> `a := (6,7,8)`
 
-*Crear Skyline Compost:* Puc crear Skyline amb diversos edificis a la vegada -> `Exemple: [(1,2,3),(4,5,6),(7,8,9)]`
+*Crear Skyline Compost:* Puc crear Skyline amb diversos edificis a la vegada -> `b := [(1,2,3),(4,5,6),(7,8,9)]`
 
-*Crear Skyline Aleatori:* Puc crear un Skyline amb *[n]* edificis, cadascun d’ells amb una alçada aleatòria entre *[0 i h]*, amb una amplada aleatòria entre *[1 i w]*, i una posició d’inici i de final aleatòria entre *[xmin i xmax]*. `{n, h, w, xmin, xmax}` -> `Exemple: {200,50,10,1,200}`
+*Crear Skyline Aleatori:* Puc crear un Skyline amb *[n]* edificis, cadascun d’ells amb una alçada aleatòria entre *[0 i h]*, amb una amplada aleatòria entre *[1 i w]*, i una posició d’inici i de final aleatòria entre *[xmin i xmax]*. `{n, h, w, xmin, xmax}` -> `c := {200,50,10,1,200}`
 
 
-*Assignació:* Etiquetar Skyline -> `Exemple: miEdificio :=(6,7,8)`
+*Assignació:* Etiquetar Skyline -> `d := (6,7,8)`
 
-*Unio:* Exemple: Uneix els 2 Skylines `(1,2,3) + (4,5,6)`
+*Unio:* Exemple: Uneix els 2 Skylines `e := (1,2,3) + (4,5,6)`
 
-*Intersecció:* Només es queda amb les parts comunes -> `Exemple: (1,2,3) * (4,5,6)`
+*Intersecció:* Només es queda amb les parts comunes -> `j := (1,2,6) * (3,5,6)`
 
-*Repetir:* Replica el Skyline n cops -> `Exemple (1,2,3) * 4`
+*Repetir:* Replica el Skyline n cops -> `k := (1,2,3) * 4`
 
-*Desplaçar a la dreta:* -> `Exemple (1,2,3) + 4)`
+*Desplaçar a la dreta:* -> `l := (1,2,3) + 4)`
 
-*Desplaçar a l\'esquerra:* -> `Exemple (1,2,3) - 4)`
+*Desplaçar a l\'esquerra:* -> `m := (1,2,3) - 4)`
 
-*Mirall:* Calcula el Skyline invertit -> `Exemple - (1,2,3)`
+*Mirall:* Calcula el Skyline invertit -> `n := -[(1,2,3),(4,5,6),(7,8,9)]`
 
 *Nota:* Tots els Skylines que facis servir s'esborraràn al acabar la sessió, utilitza les comandes /load i /save per a mantenir-los
             '''
