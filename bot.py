@@ -146,8 +146,7 @@ Pots posar-te en contacte amb ell via mail a:
     def clean(self, update, context):
         # Carreguem al usuari una taula de simbols buida
         context.user_data['antlr'].setTaulaSimbols({})
-        text = '''  
-
+        text = '''
 Acabo de esborrar tots els Skylines que tenies guardats en la memòria temporal.
 
 Tots els Skylines que havies guardat al disc, segueixent intactes.\n\n
@@ -208,7 +207,6 @@ Tots els Skylines que havies guardat al disc, segueixent intactes.\n\n
     # el missatge
     def interpret(self, update, context):
         input = update.message.text
-        #print('Instruccio', input)
         # Provem d'extreure el resultat de executar l'instrucció
         # Si ens retorna dos valors, es que el resultat ha estat
         # un Skyline
