@@ -252,7 +252,6 @@ class Skyline():
 
         # Reiniciem la llista de parts i recalculem l'area
         newSk.llistaParts = self.trobarParts(self.llistaAccions)
-        newSk.areaTotal = 0
 
         # Per cada part, recalculem l'area
         for part in self.llistaParts:
