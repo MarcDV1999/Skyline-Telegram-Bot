@@ -142,7 +142,7 @@ Aquesta és la classe que s'encarrega de gestionar els Skylines. Hi trobem mèto
 
 #### Implementació
 
-Respecte l'implementació, he optat per a implementar un metode per cada operador. Aquests mètodes apliquen l'operació agafants els Skylines del parametre implicit i del paràmetre explícit.
+Respecte a la implementació, he optat per a implementar un mètode per cada operador. Aquests mètodes apliquen l'operació agafant els Skylines del paràmetre implícit i del paràmetre explícit.
 
 Un cop implementats els mètodes he optat per sobrecarregar els operadors de la classe (+, *, -, ...).
 
@@ -181,7 +181,7 @@ a := [(1,2,3),(3,2,5),(5,5,10)]
 
 Aquesta és la classe que s'encarrega de analitzar sintàcticament les expressions escrites per l'usuari en el xat de telegram. Un cop fet l'anàlisis, fa ús de la classe Skyline per calcular el Skyline corresponent.
 
-Conté un mètode per executar una instrucció i diversos mètodes per a comunicar el Bot de telegram amb els Skylines del usuari.
+Conté un mètode per executar una instrucció i diversos mètodes per a comunicar el Bot de Telegram amb els Skylines del usuari.
 
 
 
@@ -198,6 +198,12 @@ S'emmagatzema per cada usuari el llistat dels seus Skylines de manera que es man
 ### Calcular les parts d'un edifici
 
 De cara a implementar les operacions de unió i intersecció, m'ha semblat interessant que cada Skyline tingues un atribut "_llistaParts_". Per a poder calcular aquesta llista només ha calgut, recorrer la llista d'accions ordenada i compactar al maxim les accions, formant parts.
+
+
+
+## Observacions
+
+Donat que el temps per a fer aquesta pràctica ha estat limitat, no he pogut implementar totes les funcionalitats que m'agradaria haver-hi implementat si hi hagués tingut més temps. M'hauria agradat afegir més funcionalitats al programa, com per exemple poder introduir expressions aritmètiques dins de la construcció de Skylines compostos. També m'hauria agradat donar més informació sobre quin error està cometent l'usuari a l'hora d'introduir alguna comanda, per així facilitar la interacció amb l'usuari.
 
 
 

@@ -146,7 +146,12 @@ Pots posar-te en contacte amb ell via mail a:
     def clean(self, update, context):
         # Carreguem al usuari una taula de simbols buida
         context.user_data['antlr'].setTaulaSimbols({})
-        text = 'Acabo de esborrar totes els Skylines que tenies guardats\n\n'
+        text = '''  
+
+Acabo de esborrar tots els Skylines que tenies guardats en la memòria temporal.
+
+Tots els Skylines que havies guardat al disc, segueixent intactes.\n\n
+        '''
         context.bot.send_message(chat_id=update.effective_chat.id, parse_mode='Markdown', text=text)
 
     # Metode que es linkarà amb la comanda /save.
