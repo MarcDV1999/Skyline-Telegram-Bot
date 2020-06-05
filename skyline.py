@@ -29,11 +29,9 @@ class Skyline():
     # Redefinim el operador de suma
     def __add__(self, other):
         tipus = type(other)
-        # print('Suma, tipus', tipus)
         if(tipus is Skyline):
             return self.unio(other)
         elif(tipus is int):
-            # print('Suma Skyline + Int')
             return self.moureDreta(other)
         else:
             return None
@@ -122,7 +120,6 @@ class Skyline():
 
         # Comprovem que no ens passem al desplaçar a l'esquerra
         if (self.xminTotal - n < 0):
-            # print('MoureEsquerra: No es pot moure tan a la esquerra, xmin = 0')
             n = n - (n - self.xminTotal)
 
         # Anem re-calculan el Xmin, Altura i Xmax sumantt el offset, i anem dibuixant pas a pas.
@@ -210,11 +207,9 @@ class Skyline():
         if (part[2] > accio[0] and part[0] <= accio[2] and accio[0]):
             # Si l'accio es més petita que la part, podem pintar l'edifici sencer
             if(part[2] >= accio[2]):
-                print('CapDins Sencer:', accio, part, accio[0], min(part[1], accio[1]), accio[2])
                 return (accio[0], min(part[1], accio[1]), accio[2])
             # Si l'accio es més gran que la part, hem de pintar un tros del edifici
             else:
-                print('CapDins tros:', accio, part, part[0], min(part[1], accio[1]), part[2])
                 return (max(part[0], accio[0]), min(part[1], accio[1]), part[2])
         # Sino, no cap el edifici en la part especificada
         else:
@@ -231,10 +226,8 @@ class Skyline():
         self.llistaAccions.sort(key=lambda x: x[0])
 
         # Dividim el Skyline principal en parts (per a que sigui mes facil)
-        # print('Interseccio: Accions B', llistaAccionsNoves)
         parts = self.trobarParts(self.llistaAccions)
         part2 = self.trobarParts(llistaAccionsNoves)
-        # print('Interseccio: Parts A', parts)
 
         # Per cada nova accio a afegir, mirarem si cap dins de cada part del skyline principal. Si cap,
         # pintarem l'intersecció
@@ -250,12 +243,10 @@ class Skyline():
         newSk = Skyline()
         llistaAccionsUnir = other.getLlistaAccions()
         for accio in llistaAccionsUnir:
-            # print(accio)
             # Anem calculan el Xmin, ALtura i Xmax, i anem dibuixant pas a pas.
             newSk.afegir(accio[0], accio[1], accio[2])
 
         for accio in self.llistaAccions:
-            # print(accio)
             # Anem calculan el Xmin, ALtura i Xmax, i anem dibuixant pas a pas.
             newSk.afegir(accio[0], accio[1], accio[2])
 
@@ -282,7 +273,6 @@ class Skyline():
         # entariem en bucle infinit ja que cada cop que dibuixem, afegim una entrada a la llista d'accions
         ultimesAccions = self.llistaAccions.copy()
         ultimesAccions.sort(key=lambda x: x[0], reverse=True)
-        print('Mirall: accions', ultimesAccions)
 
         xminAnterior = ultimesAccions[0][2]
 
@@ -295,7 +285,6 @@ class Skyline():
             # Coloquem la figura al inici més el espai que li pertoca
             xmin = inici + espai
             xmax = xmin + base
-            print('Mirall: Nou edifici', xmin, altura, xmax)
             newSk.afegir(xmin, altura, xmax)
             inici = xmax
             xminAnterior = accio[0]

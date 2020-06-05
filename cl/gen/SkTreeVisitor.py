@@ -39,17 +39,14 @@ class SkTreeVisitor(SkylineVisitor):
         if (len(fills) == 1):
             # Si es un num...
             try:
-                # print('Expressio: Valor', fills[0].getText())
                 return int(fills[0].getText())
             # Si es una consulta...
             except Exception as _:
-                # print('Expresio: Consulta', self.visit(fills[0]))
                 return self.visit(fills[0])
 
         # Sino, vol dir que estem en una expressió, formada per dos parametres i un simbol.
         # Tindrem algo del estil [3,+,4] per exemple
         elif(len(fills) == 3):
-            print('Expressio', len(fills))
             f1 = self.visit(fills[0])
             f2 = self.visit(fills[2])
             simbol = fills[1]
@@ -161,11 +158,9 @@ class SkTreeVisitor(SkylineVisitor):
         for f in fills:
             # Anem afegint al newSk els diversos edificis
             sk = self.visit(f)
-
+            print(sk,f)
             if (type(sk) is Skyline):
                 newSk = newSk + sk
-            elif (sk is None):
-                return (None, 'No pots escriure expressions aritmètiques per a definir un edifici compost')
         return newSk
 
     # Funció que visita l'AST on la seva arrel és un edifici aleatori

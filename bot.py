@@ -211,7 +211,6 @@ Tots els Skylines que havies guardat al disc, segueixent intactes.\n\n
         # Si ens retorna dos valors, es que el resultat ha estat
         # un Skyline
         info = context.user_data['antlr'].executarInstruccio(input)
-        print('Info: ', info)
         # Si info es una tupla, es que tenim un Skyline per tant, area i altura
         if (type(info) is tuple and info[0] is not None):
             context.bot.send_photo(chat_id=update.effective_chat.id, photo=open(self.file, 'rb'))

@@ -39,6 +39,8 @@ expr :  '(' expr ')' // Mes prioritat
     | expr DIV expr
     | expr (MES | MENYS) expr
     | edifici
+    | edificis
+    | edificiAleatori
     | NUM;
 
 
