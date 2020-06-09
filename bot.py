@@ -1,6 +1,6 @@
 # importem l'API de Telegram i Interpret
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-from interpret import Interpret
+from test import Interpret
 
 
 class Bot():
