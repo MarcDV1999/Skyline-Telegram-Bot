@@ -1,6 +1,6 @@
 # SkyLine Marc Domènech
 
-Pràctica de Python de l'assignatura de Llenguatges de Programació de la Facultat d'Informàtica de Barcelona. En aquesta pràctica he realitzat un Bot de Telegram capaç de generar Skylines de ciutats.
+Pràctica de Python de l'assignatura de Llenguatges de Programació (LP) de la Facultat d'Informàtica de Barcelona. En aquesta pràctica he realitzat un Bot de Telegram capaç de generar Skylines de ciutats.
 
 
 
